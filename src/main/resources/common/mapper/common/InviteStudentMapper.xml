@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.InviteStudentMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `invite_student`.`id`,
+            `invite_student`.`lecturer_id`,
+            `invite_student`.`student_id`,
+            `user`.`name`,
+            `user`.`phone_num`,
+            `user`.`username`,
+            `invite_student`.`classroom_id`,
+            `classroom`.`title`,
+            `invite_student`.`link_yn`,
+            `invite_student`.`created_date`
+        FROM
+            `tb_invite_student` `invite_student`
+        JOIN 
+            `tb_user` `user`
+        ON
+            `user`.`id` = `invite_student`.`student_id`
+        JOIN 
+            `tb_classroom` `classroom`
+        ON
+            `classroom`.`id` = `invite_student`.`classroom_id`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="inviteStudentParamDto.lecturerId != null">
+                AND `invite_student`.`lecturer_id` = #{inviteStudentParamDto.lecturerId}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="inviteStudentResultMap" type="kr.supporti.api.common.entity.InviteStudentEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerId" column="lecturer_id"/>
+        <result property="studentId" column="student_id"/>
+        <result property="userName" column="name"/>
+        <result property="userPhone" column="phone_num"/>
+        <result property="userEmail" column="username"/>
+        <result property="classroomId" column="classroom_id"/>
+        <result property="classTitle" column="title"/>
+        <result property="linkYn" column="link_yn"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectInviteStudentList"
+        parameterType="java.util.Map"
+        resultMap="inviteStudentResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectInviteStudentListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectInviteStudent"
+        parameterType="java.util.Map"
+        resultMap="inviteStudentResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `invite_student`.`lecturer_id` = #{id}
+    </select>
+    
+    <update
+        id="updateStudentInfo"
+        parameterType="java.util.Map">
+        UPDATE `tb_invite_student` `invite_student`
+        <set>
+            <if test="inviteStudentParamDto.linkYn != null and inviteStudentParamDto.linkYn != ''">
+                `invite_student`.`link_yn` = #{inviteStudentParamDto.linkYn},
+            </if>
+        </set>
+        WHERE
+            `invite_student`.`student_id` = #{id}
+    </update>
+
+</mapper>

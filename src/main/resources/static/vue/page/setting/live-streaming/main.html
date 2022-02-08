@@ -1,0 +1,141 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>라이브 스트리밍 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row dense>
+        <v-col cols="12" sm="6">
+            <v-card>
+                <v-card-title>링크 목록</v-card-title>
+                <v-card-text>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <v-simple-table dense>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" scope="row">라이브 이름</th>
+                                        <th class="text-center" scope="row">유튜브 영상ID</th>
+                                        <th class="text-center" scope="row">노출여부</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="(item, i) in data.liveStreamingList"
+                                        :key="item.id"
+                                        class="cursor--pointer"
+                                        @click="clickLiveStreaming(item.id)"
+                                    >
+                                        <td class="text-center">{{item.liveTitle}}</td>
+                                        <td class="text-center">{{item.youtubeLink}}</td>
+                                        <td class="text-center">{{item.exposureYn ==='Y'? '노출' : '미노출'}}</td>
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col cols="12" sm="6">
+            <v-card>
+                <v-card-title>라이브 상세</v-card-title>
+                <v-card-text>
+                    <v-form ref="form">
+                        <v-row dense>
+                            <v-col cols="12">
+                                <v-text-field
+                                    dense
+                                    outlined
+                                    label="라이브 이름"
+                                    validate-on-blur
+                                    hide-details="auto"
+                                    v-model="data.liveStreaming.liveTitle"
+                                      maxlength="50"
+                                      counter
+                                  :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    outlined
+                                    label="라이브 설명"
+                                    validate-on-blur
+                                    hide-details="auto"
+                                    v-model="data.liveStreaming.liveDescription"
+                                      counter
+                                  :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="6">
+								<v-subheader>https://www.youtube.com/embed/</v-subheader>
+							</v-col>
+                            <v-col cols="6">
+                                <v-text-field
+                                  dense
+                                  outlined
+                                  label="유튜브 영상ID"
+                                  placeholder="youtubeId"
+                                  hide-details="auto"
+                                  validate-on-blur
+                                  v-model="data.liveStreaming.youtubeLink"
+                                  maxlength="200"
+                                  counter
+                                  :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" v-if="data.liveStreaming.createdDate !== null && data.liveStreaming.createdDate !== undefined">
+                                <v-text-field
+                                  dense
+                                  outlined
+                                  label="등록일자"
+                                  hide-details="auto"
+                                  validate-on-blur
+                                  disabled
+                                  v-model="data.liveStreaming.createdDate"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                            <v-col cols="6">
+                                <div class="requiredBox" style="text-align: center; border: 1px solid #EAEAEA;">
+                                    <h3 class="pt-2">라이브여부</h3>
+                                    <div class="pb-2 mt-2">
+                                        <el-radio v-model="data.liveStreaming.liveYn" label="Y">예</el-radio>
+                                        <el-radio v-model="data.liveStreaming.liveYn" label="N">아니오</el-radio>
+                                    </div>
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="requiredBox" style="text-align: center; border: 1px solid #EAEAEA;">
+                                    <h3 class="pt-2">노출여부 <span>(하나의 영상만 노출됩니다)</span></h3>
+                                    <div class="pb-2 mt-2">
+                                        <el-radio v-model="data.liveStreaming.exposureYn" label="Y">예</el-radio>
+                                        <el-radio v-model="data.liveStreaming.exposureYn" label="N">아니오</el-radio>
+                                    </div>
+                                </div>
+                            </v-col>
+                        <v-row>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" class="text-right">
+                                <v-btn
+                                    color="secondary"
+                                    @click="data.liveStreaming = {};"
+                                >생성</v-btn>
+                                <v-btn
+                                    color="primary"
+                                    @click="saveLiveStreaming()"
+                                >저장</v-btn>
+                                <v-btn
+                                    v-if="!!data.liveStreaming.id"
+                                    color="error"
+                                    @click="deleteLiveStreaming();"
+                                >삭제</v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </v-col>
+    </v-row>
+</div>

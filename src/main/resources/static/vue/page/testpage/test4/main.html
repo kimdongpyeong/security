@@ -1,0 +1,8 @@
+<main id="main">
+	<div class="zliveWrap">
+		<iframe :src="data.youtubeLink" title="YouTube video player" width='854' height='480' frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		
+		<v-btn @click="authenticate().then(loadClient)">authorize and load</v-btn>
+		<v-btn @click="execute()">execute</v-btn>
+	</div>
+</main>

@@ -1,0 +1,117 @@
+<div class="mypage-wrap">
+    <div class="container">
+        <el-row>
+            <el-col :span="12">
+		        <h2 class="tit">
+		            <div class="profile-img"><img :src="data.user.profileSrc" alt=""></div>
+		            <strong>{{ data.user.name }}님</strong> 의 강의 목록
+		        </h2>
+            </el-col>
+            <el-col :span="12" style="text-align: end;">
+		        <el-button type="info" plain @click="createClass()">강의 등록하기</el-button>
+            </el-col>
+        </el-row>
+        <div class="mypage-group">
+            <h3>실시간 강의
+                <!-- 버튼 클릭시 input box와 버튼 활성화 -->
+                <!-- <button class="delete-btn"><img src="/resources/img/icon/icon-delete.png" alt=""></button> -->
+                <!-- 활성화 버튼을 다시 클릭시 팝업 생성 -->
+                <button class="delete-btn" v-if="data.classRoomList.real.length > 0" @click="deleteClassPop('R')"><img src="/resources/img/icon/icon-delete-active.png" alt=""></button>
+            </h3>
+            <template v-if="data.classRoomList.real.length > 0">
+	            <ul class="leacture-list">
+	                <li v-for="(item, idx) in data.classRoomList.real" v-if="idx < data.classRoomList.realRowSize">
+	                    <el-checkbox @change="classCheck(item.id, item.type)"></el-checkbox>
+	                    <a href="javascript:void(0);">
+	                        <div class="img-box">
+	                            <img :src="'/api/app/images?subpath=classRoomProfile&filename=' + item.saveFileNm" alt="">
+	                            <div class="hover-box"  @click="detailClass(item.id)">
+	                                <el-progress type="circle" :percentage="75"></el-progress>
+	                            </div>
+	                        </div>
+	                        <p class="tit">{{item.title}}</p>
+	                    </a>
+	                </li>
+	            </ul>
+                <div class="btn-group" >
+	                <button class="more-btn" v-if="data.classRoomList.realRowSize < data.classRoomList.real.length" @click="moreClassRoomList('R');">더보기</button>
+                    <button class="more-btn" v-else-if = "data.classRoomList.real.length > 4 && data.classRoomList.realRowSize > data.classRoomList.real.length" @click="lessClassRoomList('R');">닫기</button>
+                </div>
+            </template>
+            <div v-else style="text-align: center; padding: 30px;" >
+                <h4>개설된 실시간 강의가 없습니다.<p/>강의를 등록해주세요.</h4>
+            </div>
+        </div>
+        <div class="mypage-group">
+            <h3>일반 강의
+                <button class="delete-btn" v-if="data.classRoomList.normal.length > 0" @click="deleteClassPop('N')"><img src="/resources/img/icon/icon-delete-active.png" alt=""></button>
+            </h3>
+            <template v-if="data.classRoomList.normal.length > 0">
+	            <ul class="leacture-list">
+	                <li v-for="(item, idx) in data.classRoomList.normal" v-if="idx < data.classRoomList.normalRowSize">
+	                    <el-checkbox @change="classCheck(item.id, item.type)"></el-checkbox>
+	                    <a href="javascript:void(0);">
+	                        <div class="img-box">
+	                            <img :src="'/api/app/images?subpath=classRoomProfile&filename=' + item.saveFileNm" alt="">
+	                            <div class="hover-box" @click="detailClass(item.id)" >
+	                                <el-progress type="circle" :percentage="75"></el-progress>
+	                            </div>
+	                        </div>
+	                        <p class="tit">{{item.title}}</p>
+	                    </a>
+	                </li>
+	            </ul>
+                <div class="btn-group" >
+	                <button class="more-btn" v-if="data.classRoomList.normalRowSize < data.classRoomList.normal.length" @click="moreClassRoomList('N');">더보기</button>
+                    <button class="more-btn" v-else-if = "data.classRoomList.normal.length > 4 && data.classRoomList.normalRowSize > data.classRoomList.normal.length" @click="lessClassRoomList('N');">닫기</button>
+                </div>
+            </template>
+            <div v-else style="text-align: center; padding: 30px;" >
+                <h4>개설된 일반 강의가 없습니다.<p/>강의를 등록해주세요.</h4>
+            </div>
+        </div>
+        <div class="mypage-group">
+            <h3>종료된 강의
+                <button class="delete-btn" v-if="data.classRoomList.end.length > 0" @click="deleteClassPop('E')">
+                    <img src="/resources/img/icon/icon-delete-active.png" alt="">
+                </button>
+            </h3>
+            <template v-if="data.classRoomList.end.length > 0">
+                <ul class="leacture-list">
+                    <li v-for="(item, idx) in data.classRoomList.end" v-if="idx < data.classRoomList.endRowSize">
+                        <el-checkbox @change="classCheck(item.id, 'E')"></el-checkbox>
+                        <a href="javascript:void(0);">
+                            <div class="img-box">
+                                <img :src="'/api/app/images?subpath=classRoomProfile&filename=' + item.saveFileNm" alt="">
+                                <div class="hover-box" @click="detailClass(item.id)" >
+                                    <el-progress type="circle" :percentage="75"></el-progress>
+                                </div>
+                            </div>
+                            <p class="tit">{{item.title}}</p>
+                        </a>
+                    </li>
+                </ul>
+                <div class="btn-group">
+                    <!-- 더보기버튼 클릭시 한줄씩 생성 -->
+                    <button class="more-btn" v-if="data.classRoomList.endRowSize < data.classRoomList.end.length" @click="moreClassRoomList('E');">더보기</button>
+                    <button class="more-btn"  v-else-if = "data.classRoomList.end.length > 4 && data.classRoomList.endRowSize > data.classRoomList.end.length" @click="lessClassRoomList('E');">닫기</button>
+                </div>
+            </template>
+            <div v-else style="text-align: center; padding: 30px;" >
+                <h4>종료된 강의가 없습니다.</h4>
+            </div>
+        </div>
+    </div>
+
+    <el-dialog
+        title="삭제하시겠습니까?"
+        :visible.sync="visible.deleteDialog"
+        class="pop-wrap delete-pop-wrap"
+        center>
+        <div class="col-group btn-group">
+            <button  @click="visible.deleteDialog = false">아니오</button>
+            <button class="main-btn" @click="deleteClass">네</button>
+        </div>
+    </el-dialog>
+    <!-- //삭제 팝업 -->
+</div>

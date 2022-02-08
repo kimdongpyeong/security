@@ -1,0 +1,130 @@
+<div class="zclassWrap zclassMain">
+	<div class="newMypageWrap mentorWrap">
+		<h2>안녕하세요, <span class="type">크리에이터 </span> <span class="name">{{ data.user.name }}</span>님!</h2>
+		<div class="colGroup mypageGroup">
+			<div class="leftGroup">
+				<div class="infoBox">
+					<div class="profileBg">
+						<img class="profileImg" :src="data.user.profileSrc" alt="프로필 이미지" />
+					</div>
+					<div>
+						<h3>닉네임</h3>
+						<p>{{ data.user.nickname }}</p>
+					</div>
+					<div>
+						<h3>소개</h3>
+						<p>{{ data.user.introduceContent }}</p>
+					</div>
+					<div>
+						<h3>개인정보</h3>
+						<template v-if="data.user.gender == 'M'"> <p>남자</p> </template>
+						<template v-else> <p>여자</p> </template>
+						<p>{{ data.user.username }}</p>
+						<p>{{ data.user.phoneNum }}</p>
+					</div>
+					<div>
+						<a href="/test3/mypage-creator/main-detail">수정하기</a>
+					</div>
+				</div>
+				<button class="logout" @click="logout();">로그아웃</button>
+			</div>
+			
+			<div class="rightGroup">
+				<div>
+					<div class="colGroup titleGroup">
+						<h3>나의 지난 라이브</h3>
+						<el-button class="modifyBtn addClassBtn" type="text" @click="">라이브 하러가기</el-button>
+					</div>
+					<div class="colGroup classListGroup contents">
+						<div class="colGroup noncontents" >
+							<p>아직 나의 라이브가 없어요.<br />
+								라이브 방송을 켜고 소통해보세요.
+							</p>
+						</div>
+					</div>
+				</div>
+				
+				<div>
+					<div class="colGroup titleGroup">
+						<h3>나의 커뮤니티</h3>
+						<el-button class="modifyBtn addClassBtn" type="text" @click="">커뮤니티 오픈하기</el-button>
+					</div>
+					<div class="colGroup classListGroup contents">
+					<template v-if="data.createdRoomList.length > 0">
+						<template v-for="room in data.createdRoomList">
+							<div class="classCard">
+								<div @click=""> 
+									<div class="imgBox">
+										<img :src="room.avatar" alt="" style="cursor: pointer;" />
+									</div>
+									<div class="txtBox colGroup">
+										<div class="txts">
+											<h4>{{room.roomName}}</h4>
+											<hr>
+											<h5>참여인원 {{room.userCnt}}명</h5>
+											<h5>{{room.createdDate}}</h5>
+										</div>
+									</div>
+								</div>
+								<!--<el-button class="modifyBtn fixClassBtn" type="text" @click="settingClass(card.id)">수정하기</el-button>-->
+							</div>
+						</template>
+						<template v-else>
+							<div class="colGroup noncontents" >
+								<p>아직 나의 커뮤니티가 없어요.<br />
+									커뮤니티를 개설해서 소통해보세요
+								</p>
+							</div>
+						</template>
+					</template>
+					</div>
+					
+					<div>
+					</div>
+					
+					<div class="colGroup titleGroup">
+						<h3>1:1 커뮤니티</h3>
+					</div>
+					<!--<div class="reviewGroup">
+						<template v-for="review in data.reviewList">
+							<div class="review">
+								<el-rate allow-half v-model="review.rating" disabled></el-rate>
+								<h4>{{ review.content }}</h4>
+								<div class="colGroup userInfo">
+									<span class="name">{{ review.userNm }}</span>
+									<span class="subject">{{ review.classTitle }}</span>
+									<span class="date">{{ review.lastModifiedDate }}</span>
+								</div>
+							</div>
+						</template>-->
+						<div class="colGroup classListGroup contents">
+						<template v-if="data.personalRoomList.length > 0">
+							<template v-for="room in data.personalRoomList">
+								<div class="classCard">
+									<div @click=""> 
+										<div class="imgBox">
+											<img :src="room.avatar" alt="" style="cursor: pointer;" />
+										</div>
+										<div class="txtBox colGroup">
+											<div class="txts">
+												<h4>{{room.roomName}}</h4>
+												<hr>
+												<h5>{{room.createdDate}}</h5>
+											</div>
+										</div>
+									</div>
+							</template>
+						</template>
+						<template v-else>
+							<div class="colGroup noncontents" >
+								<p>소통중인 채팅이 없습니다.<br />
+									커뮤니티를 개설하고 1:1 채팅을 해보세요
+								</p>
+							</div>
+						</template>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

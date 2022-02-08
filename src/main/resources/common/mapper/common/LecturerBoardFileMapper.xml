@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.LecturerBoardFileMapper">
+
+    <sql id="selectFrom">
+		SELECT
+		   `lecturer_board_file`.`id`,
+		   `lecturer_board_file`.`lecturer_board_id`,
+		   `lecturer_board_file`.`origin_file_nm`,
+		   `lecturer_board_file`.`save_file_nm`,
+		   `lecturer_board_file`.`file_size`,
+		   `lecturer_board_file`.`created_date`
+		FROM
+			`tb_lecturer_board_file` `lecturer_board_file`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="boardFileParamDto.boardId != null and boardFileParamDto.boardId != ''">
+                AND `lecturer_board_file`.`lecturer_board_id` = #{boardFileParamDto.lecturerBoardId}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="boardFileResultMap" type="kr.supporti.api.common.entity.LecturerBoardFileEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerBoardId" column="lecturerBoard_id"/>
+        <result property="originFileNm" column="origin_file_nm"/>
+        <result property="saveFileNm" column="save_file_nm"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectBoardFileList"
+        parameterType="java.util.Map"
+        resultMap="boardFileResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectBoardFileListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectBoardFile"
+        parameterType="java.util.Map"
+        resultMap="boardFileResultMap"
+    >
+        <include refid="selectFrom"/>
+		WHERE 
+            `lecturer_board_file`.`id` = #{id}
+    </select>
+	
+    <select
+        id="selectFileOriginNm"
+        parameterType="java.util.Map"
+        resultMap="boardFileResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE 
+            `lecturer_board_file`.`save_file_nm` = #{filename}
+    </select>
+    
+	<update
+		id="updateBoardFile"
+		parameterType ="java.util.Map"
+	>
+			UPDATE 
+				`tb_lecturer_board_file` `lecturer_board_file`
+	        SET
+	            `lecturer_board_file`.`lecturer_board_id` = #{lecturerDto.id}
+			WHERE `lecturer_board_file`.`save_file_nm` IN
+		    <foreach collection="noticeDto.fileListvv" item="item" index="index" separator="," open="(" close=")">
+	            #{item}
+            </foreach>
+	</update>
+	
+    <delete
+        id="deleteBoardFile"
+        parameterType ="java.util.Map"
+    >
+            DELETE FROM `tb_lecturer_board_file`
+            WHERE `save_file_nm` IN
+            <foreach collection="noticeDto.removeFileList" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+    </delete>
+</mapper>

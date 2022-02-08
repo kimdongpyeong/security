@@ -1,0 +1,102 @@
+<div class="zliveWrap">
+	<div class="findpageWrap">
+	    <div class="container_z">
+	        <form name="idPwForm" method="post">
+	            <!-- 필수 데이타로, 누락하시면 안됩니다. -->
+	            <input type="hidden" name="m" value="checkplusService">
+	            <!-- 위에서 업체정보를 암호화 한 데이타입니다. -->
+	            <input type="hidden" name="EncodeData" :value="data.phone.sEncData">
+	            <input type ="hidden" name="recvMethodType" value ="get">
+	        </form>
+	        <el-tabs v-model="activeName" @tab-click="handleClick">
+	            <el-tab-pane label="아이디 찾기" name="idFindTab">
+	                <div class="inputGroup">
+	                    <label for="phone" >핸드폰 번호</label>
+	                    <div class="valiGroup">
+	                        <input type="text" v-model="data.user.phoneNum" placeholder="인증하기를 눌러주세요." readonly />
+	                        <button @click="certiPhone();">인증하기</button>
+	                    </div>
+	                </div>
+	                <el-button class="findBtn" type="button" @click="getFindId();">아이디 찾기</el-button>
+	            </el-tab-pane>
+	            <el-tab-pane label="비밀번호 찾기" name="pwFindTab">
+	                <div class="inputGroup">
+	                    <label for="id">아이디</label>
+	                    <div class="valiGroup">
+	                        <input type="text" id="id" v-model="data.user.username" @blur="validateChk('email');" :class="{validationMark: !flag.emailFlag}" />
+	                        <p :show="!flag.emailFlag" class="validationMessage">{{ flag.emailText }}</p>
+	                    </div>
+	                </div>
+	                <div class="inputGroup">
+	                    <label for="name">이름</label>
+	                    <div class="valiGroup">
+	                        <input type="text" id="name" v-model="data.user.name" @blur="validateChk('name');" :class="{validationMark: !flag.nameFlag}"/>
+	                        <p :show="!flag.nameFlag" class="validationMessage">{{flag.nameText}}</p>
+	                    </div>
+	                </div>
+	                <div class="inputGroup">
+	                    <label for="phone">핸드폰 번호</label>
+	                    <div class="valiGroup">
+	                        <input type="text" v-model="data.user.phoneNum" readonly placeholder="인증하기를 눌러주세요." />
+	                        <button @click="certiPhone();">인증하기</button>
+	                    </div>
+	                </div>
+	                <el-button class="findBtn" type="button" @click="getFindPwd();">비밀번호 찾기</el-button>
+	            </el-tab-pane>
+	        </el-tabs>
+	    </div>
+	
+	    <!-- 아이디 찾기 성공 -->
+	    <div class="profilePop">
+	        <el-dialog title="" :visible.sync="visible.idVisible" class="signUpWrap">
+	            <template v-if="find.username != null">
+	                <div class="contents">
+	                    <p>
+	                        회원님의 아이디는
+	                        <span class="value">{{find.username}}</span> 입니다.
+	                    </p>
+	                </div>
+	                <div class="btnWrap">
+	                    <button class="backBtn" type="button" @click="visible.idVisible = false">확인</button>
+	                </div>
+	            </template>
+	            <template v-else>
+	                <div class="contents">
+	                    <p>존재하지 않는 회원정보 입니다.</p>
+	                </div>
+	                <div class="btnWrap">
+	                    <button class="backBtn" type="button" @click="visible.idVisible = false">닫기</button>
+	                </div>
+	            </template>
+	        </el-dialog>
+	    </div>
+	    <!-- 비밀번호 찾기 성공 -->
+	    <div class="profilePop infoFormWrap">
+	        <el-dialog title="" :visible.sync="visible.pwVisible" class="signUpWrap pwEditWrap">
+	            <div class="contents">
+	                <p>비밀번호 변경</p>
+	                <form action="">
+	                    <div class="boxGroup">
+	                        <div class="pwBox">
+	                            <label for="pwNew">변경 비밀번호</label>
+	                            <input id="pwNew" type="password" v-model="data.user.newPassword" @blur="validateChk('newPwd');" :class="{validationMark: !flag.newPwdFlag}" />
+	                        </div>
+	                        <p :show="!flag.newPwdFlag" class="validationMessage">{{ flag.newPwdText }}</p>
+	                    </div>
+	                    <div class="boxGroup">
+	                        <div class="pwBox">
+	                            <label for="pwNewChk">변경 비밀번호 확인</label>
+	                            <input id="pwNewChk" type="password" v-model="data.user.newPasswordCk" @blur="validateChk('newPwdCk');" :class="{validationMark: !flag.newPwdCkFlag}" />
+	                        </div>
+	                        <p :show="!flag.newPwdCkFlag" class="validationMessage">{{ flag.newPwdCkText }}</p>
+	                    </div>
+	                </form>
+	            </div>
+	            <div class="btnWrap">
+	                <button class="backBtn" type="button" @click="changePwd();">변경하기</button>
+	                <button class="backBtn" type="button" @click="visible.pwVisible = false">취소하기</button>
+	            </div>
+	        </el-dialog>
+	    </div>
+	</div>
+</div>

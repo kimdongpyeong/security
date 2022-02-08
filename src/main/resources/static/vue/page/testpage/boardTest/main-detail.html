@@ -1,0 +1,18 @@
+<div class="ma-3" style="margin-bottom: 100px; margin-top: 100px;">
+    <v-row class="my-7" style="margin-bottom: 50px;">
+        <v-col class="ml-7" cols="12">
+            <span class="ml-7" style="margin-left: 20px;">상세 페이지<span>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="6">
+            <h1 style="margin-left: 20px; border-bottom: 1px solid #444444;"> 제목: &nbsp;{{data.noticeTitle}}</h1>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="6">
+            <h1 style="margin-left: 20px;"> 내용: &nbsp;</h1><br>
+            <p style="margin-left: 20px;" v-html="data.noticeDesc"/>
+        </v-col>
+    </v-row>
+</div> 

@@ -1,0 +1,48 @@
+<div class="ma-3">
+    <v-row>
+        <v-col>
+            <h1>API 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-expansion-panels
+                multiple
+                v-model="api.panels.list"
+            >
+                <v-expansion-panel>
+                    <v-expansion-panel-header>API 리스트</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <v-data-table
+                            fixed-header
+                            hide-default-footer
+                            height="auto"
+                            show-select
+                            v-model="api.selected"
+                            :headers="api.dataTable.headers"
+                            :items="api.dataTable.items"
+                            :loading="api.dataTable.loading"
+                            :server-items-length="api.dataTable.serverItemsLength"
+                            :page.sync="api.dataTable.page"
+                            :items-per-page.sync="api.dataTable.itemsPerPage"
+                            @page-count="api.pagination.length = $event;"
+                            @click:row="handleClick"
+                        >
+                        </v-data-table>
+                        <div>
+                            <v-pagination
+                                :length="api.pagination.length"
+                                :total-visible="api.pagination.totalVisible"
+                                v-model="api.dataTable.page"
+                            ></v-pagination>
+                        </div>
+                        <div class="float-right">
+                            <v-btn depressed color="primary" @click="$router.push('/settings/apis/detail')">등록</v-btn>
+                            <v-btn depressed color="error" @click="deleteApiList()">삭제</v-btn>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </v-col>
+    </v-row>
+</div>

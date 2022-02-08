@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.CalculateMapper">
+
+    <resultMap id="calculateResultMap" type="kr.supporti.api.common.dto.CalculateDto">
+        <result property="month" column="month"/>
+        <result property="date" column="date"/>
+        <result property="cashTotal" column="cash_total"/>
+        <result property="cardTotal" column="card_total"/>
+        <result property="total" column="total"/>
+    </resultMap>
+    
+    
+    <select
+        id="selectCalculateList"
+        parameterType="java.util.Map"
+        resultMap="calculateResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        SELECT 
+		    DATE_FORMAT(A.date,'%Y-%m') AS `month`,
+		    A.date AS `date`,
+		    SUM(A.card) AS `card_total`,
+		    SUM(A.cash) AS `cash_total`,
+		    SUM(A.card) + SUM(A.cash) AS `total`
+		FROM 
+		(
+		    (
+		        SELECT
+		            A.`date` AS `date`,
+		            IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `card`,
+		            0 AS `cash`
+		        FROM 
+		        (
+		            SELECT 
+		                DATE(payment.payment_date) AS `date`,
+		                sum(payment.amount) AS `total`
+		            FROM 
+		                tb_payment_history `payment`
+		            WHERE 
+		            `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+		           AND
+		                payment.state = 'S'
+		            AND 
+		                payment.payment_method_cd = 'PM01'
+		            GROUP BY 
+		               DATE(`payment`.payment_date)
+		        ) A
+		        LEFT JOIN 
+		        (
+		            SELECT 
+		                `sales`.sales_start_date AS `date`,
+		                SUM(`sales`.total_sales) AS `total`
+		            FROM
+		                tb_sales_history `sales`
+		            WHERE
+		                `sales`.created_by = #{calculateParamDto.createdBy}
+		            AND 
+		                `sales`.payment_method_cd = 'PM01'
+		            GROUP BY 
+		                `sales`.sales_start_date
+		        ) B
+		        ON A.`date` = B.`date`
+		    )
+		    UNION 
+		    (
+		        SELECT
+		            B.`date` AS `date`,
+		            IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `card`,
+		            0 AS `cash`
+		        FROM 
+		        (
+		            SELECT 
+		                DATE(payment.payment_date) AS `date`,
+		                sum(payment.amount) AS `total`
+		            FROM 
+		                tb_payment_history `payment`
+		            WHERE 
+		            `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+		           AND
+		                payment.state = 'S'
+		            AND 
+		                payment.payment_method_cd = 'PM01'
+		            GROUP BY 
+		               DATE(`payment`.payment_date)
+		        ) A
+		        RIGHT JOIN 
+		        (
+		            SELECT 
+		                `sales`.sales_start_date AS `date`,
+		                SUM(`sales`.total_sales) AS `total`
+		            FROM
+		                tb_sales_history `sales`
+		            WHERE
+		                `sales`.created_by = #{calculateParamDto.createdBy}
+		            AND 
+		                `sales`.payment_method_cd = 'PM01'
+		            GROUP BY 
+		                `sales`.sales_start_date
+		        ) B
+		        ON A.date = B.date
+		    )
+		    UNION 
+		    (
+		        SELECT 
+		            A.`date` AS `date`,
+		            0 AS `card`,
+		            IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `cash`
+		        FROM 
+		        (
+		            SELECT 
+		                DATE(payment.payment_date) AS `date`,
+		                sum(payment.amount) AS `total`
+		            FROM 
+		                tb_payment_history `payment`
+		            WHERE 
+		            `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+		           AND
+		                payment.state = 'S'
+		            AND 
+		                payment.payment_method_cd = 'PM02'
+		            GROUP BY 
+		               DATE(`payment`.payment_date)
+		        ) A
+		        LEFT JOIN 
+		        (
+		            SELECT 
+		                `sales`.sales_start_date AS `date`,
+		                SUM(`sales`.total_sales) AS `total`
+		            FROM
+		                tb_sales_history `sales`
+		            WHERE
+		                `sales`.created_by = #{calculateParamDto.createdBy}
+		            AND 
+		                `sales`.payment_method_cd = 'PM02'
+		            GROUP BY 
+		                `sales`.sales_start_date
+		        ) B
+		        ON A.`date` = B.`date`
+		    )
+		    UNION 
+		    (
+		        SELECT 
+		            B.`date` AS `date`,
+		            0 AS `card`,
+		            IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `cash`
+		        FROM 
+		        (
+		            SELECT 
+		                DATE(payment.payment_date) AS `date`,
+		                sum(payment.amount) AS `total`
+		            FROM 
+		                tb_payment_history `payment`
+		            WHERE 
+		            `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+		           AND
+		                payment.state = 'S'
+		            AND 
+		                payment.payment_method_cd = 'PM02'
+		            GROUP BY 
+		               DATE(`payment`.payment_date)
+		        ) A
+		        RIGHT JOIN 
+		        (
+		            SELECT 
+		                `sales`.sales_start_date AS `date`,
+		                SUM(`sales`.total_sales) AS `total`
+		            FROM
+		                tb_sales_history `sales`
+		            WHERE
+		                `sales`.created_by = #{calculateParamDto.createdBy}
+		            AND 
+		                `sales`.payment_method_cd = 'PM02'
+		            GROUP BY 
+		                `sales`.sales_start_date
+		        ) B
+		        ON A.`date` = B.`date`
+		    )
+		   UNION
+		   (
+		      SELECT 
+		         DATE(`regular_payment`.`payment_date`) AS `date`,
+		            sum(payment.amount) AS `card`,
+		            0 AS `cash`
+		      FROM
+		         tb_payment_history `payment`
+		      JOIN 
+		         tb_regular_payment_history `regular_payment`
+		      ON
+		         payment.id = regular_payment.payment_history_id
+		      WHERE
+		         `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+		      AND
+		         `payment`.`state` = 'S'
+		        AND 
+		            payment.payment_method_cd = 'PM01'
+		      GROUP BY 
+		         DATE(`regular_payment`.payment_date)
+		   )
+		   UNION
+		   (
+		      SELECT 
+		         DATE(`regular_payment`.`payment_date`) AS `date`,
+		           0 AS `card`,
+		            sum(payment.amount) AS `cash`
+		      FROM
+		         tb_payment_history `payment`
+		      JOIN 
+		         tb_regular_payment_history `regular_payment`
+		      ON
+		         payment.id = regular_payment.payment_history_id
+		      WHERE
+		         `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+		      AND
+		         `payment`.`state` = 'S'
+		        AND 
+		            payment.payment_method_cd = 'PM02'
+		      GROUP BY 
+		         DATE(`regular_payment`.payment_date)
+		   )
+		) A
+		WHERE 
+		    DATE_FORMAT(A.date,'%Y-%m') BETWEEN #{calculateParamDto.startMonth} AND #{calculateParamDto.endMonth}
+		GROUP BY 
+		    DATE_FORMAT(A.date,'%Y-%m')
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectCalculateListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        SELECT 
+            DATE_FORMAT(A.date,'%Y-%m') AS `month`,
+            SUM(A.card) AS `card_total`,
+            SUM(A.cash) AS `cash_total`,
+            SUM(A.card) + SUM(A.cash) AS `total`
+        FROM 
+        (
+            (
+                SELECT
+                    A.`date` AS `date`,
+                    IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `card`,
+                    0 AS `cash`
+                FROM 
+                (
+                    SELECT 
+                        DATE(payment.payment_date) AS `date`,
+                        sum(payment.amount) AS `total`
+                    FROM 
+                        tb_payment_history `payment`
+                    WHERE 
+                    `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+                   AND
+                        payment.state = 'S'
+                    AND 
+                        payment.payment_method_cd = 'PM01'
+                    GROUP BY 
+                       DATE(`payment`.payment_date)
+                ) A
+                LEFT JOIN 
+                (
+                    SELECT 
+                        `sales`.sales_start_date AS `date`,
+                        SUM(`sales`.total_sales) AS `total`
+                    FROM
+                        tb_sales_history `sales`
+                    WHERE
+                        `sales`.created_by = #{calculateParamDto.createdBy}
+                    AND 
+                        `sales`.payment_method_cd = 'PM01'
+                    GROUP BY 
+                        `sales`.sales_start_date
+                ) B
+                ON A.`date` = B.`date`
+            )
+            UNION 
+            (
+                SELECT
+                    B.`date` AS `date`,
+                    IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `card`,
+                    0 AS `cash`
+                FROM 
+                (
+                    SELECT 
+                        DATE(payment.payment_date) AS `date`,
+                        sum(payment.amount) AS `total`
+                    FROM 
+                        tb_payment_history `payment`
+                    WHERE 
+                    `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+                   AND
+                        payment.state = 'S'
+                    AND 
+                        payment.payment_method_cd = 'PM01'
+                    GROUP BY 
+                       DATE(`payment`.payment_date)
+                ) A
+                RIGHT JOIN 
+                (
+                    SELECT 
+                        `sales`.sales_start_date AS `date`,
+                        SUM(`sales`.total_sales) AS `total`
+                    FROM
+                        tb_sales_history `sales`
+                    WHERE
+                        `sales`.created_by = #{calculateParamDto.createdBy}
+                    AND 
+                        `sales`.payment_method_cd = 'PM01'
+                    GROUP BY 
+                        `sales`.sales_start_date
+                ) B
+                ON A.date = B.date
+            )
+            UNION 
+            (
+                SELECT 
+                    A.`date` AS `date`,
+                    0 AS `card`,
+                    IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `cash`
+                FROM 
+                (
+                    SELECT 
+                        DATE(payment.payment_date) AS `date`,
+                        sum(payment.amount) AS `total`
+                    FROM 
+                        tb_payment_history `payment`
+                    WHERE 
+                    `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+                   AND
+                        payment.state = 'S'
+                    AND 
+                        payment.payment_method_cd = 'PM02'
+                    GROUP BY 
+                       DATE(`payment`.payment_date)
+                ) A
+                LEFT JOIN 
+                (
+                    SELECT 
+                        `sales`.sales_start_date AS `date`,
+                        SUM(`sales`.total_sales) AS `total`
+                    FROM
+                        tb_sales_history `sales`
+                    WHERE
+                        `sales`.created_by = #{calculateParamDto.createdBy}
+                    AND 
+                        `sales`.payment_method_cd = 'PM02'
+                    GROUP BY 
+                        `sales`.sales_start_date
+                ) B
+                ON A.`date` = B.`date`
+            )
+            UNION 
+            (
+                SELECT 
+                    B.`date` AS `date`,
+                    0 AS `card`,
+                    IFNULL(A.total, 0) + IFNULL(B.total, 0) AS `cash`
+                FROM 
+                (
+                    SELECT 
+                        DATE(payment.payment_date) AS `date`,
+                        sum(payment.amount) AS `total`
+                    FROM 
+                        tb_payment_history `payment`
+                    WHERE 
+                    `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+                   AND
+                        payment.state = 'S'
+                    AND 
+                        payment.payment_method_cd = 'PM02'
+                    GROUP BY 
+                       DATE(`payment`.payment_date)
+                ) A
+                RIGHT JOIN 
+                (
+                    SELECT 
+                        `sales`.sales_start_date AS `date`,
+                        SUM(`sales`.total_sales) AS `total`
+                    FROM
+                        tb_sales_history `sales`
+                    WHERE
+                        `sales`.created_by = #{calculateParamDto.createdBy}
+                    AND 
+                        `sales`.payment_method_cd = 'PM02'
+                    GROUP BY 
+                        `sales`.sales_start_date
+                ) B
+                ON A.`date` = B.`date`
+            )
+           UNION
+           (
+              SELECT 
+                 DATE(`regular_payment`.`payment_date`) AS `date`,
+                    sum(payment.amount) AS `card`,
+                    0 AS `cash`
+              FROM
+                 tb_payment_history `payment`
+              JOIN 
+                 tb_regular_payment_history `regular_payment`
+              ON
+                 payment.id = regular_payment.payment_history_id
+              WHERE
+                 `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+              AND
+                 `payment`.`state` = 'S'
+                AND 
+                    payment.payment_method_cd = 'PM01'
+              GROUP BY 
+                 DATE(`regular_payment`.payment_date)
+           )
+           UNION
+           (
+              SELECT 
+                 DATE(`regular_payment`.`payment_date`) AS `date`,
+                   0 AS `card`,
+                    sum(payment.amount) AS `cash`
+              FROM
+                 tb_payment_history `payment`
+              JOIN 
+                 tb_regular_payment_history `regular_payment`
+              ON
+                 payment.id = regular_payment.payment_history_id
+              WHERE
+                 `payment`.`request_lecturer_id` = #{calculateParamDto.createdBy}
+              AND
+                 `payment`.`state` = 'S'
+                AND 
+                    payment.payment_method_cd = 'PM02'
+              GROUP BY 
+                 DATE(`regular_payment`.payment_date)
+           )
+        ) A
+        WHERE 
+            DATE_FORMAT(A.date,'%Y-%m') BETWEEN #{calculateParamDto.startMonth} AND #{calculateParamDto.endMonth}
+        GROUP BY 
+            DATE_FORMAT(A.date,'%Y-%m')
+        
+        <include refid="PageFragment.countEnd"/>
+    </select>
+    
+</mapper>

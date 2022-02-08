@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.UserPeristalsisMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `userPeristalsis`.`id`,
+            `userPeristalsis`.`user_id`,
+            `userPeristalsis`.`sign_up_way`,
+            `userPeristalsis`.`created_date`
+        FROM
+            `tb_user_peristalsis` `userPeristalsis`
+    </sql>
+
+    <sql id="where">
+        <where>
+        </where>
+    </sql>
+
+    <resultMap id="userPeristalsisResultMap" type="kr.supporti.api.common.entity.UserPeristalsisEntity">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="signUpWay" column="sign_up_way"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectUser"
+        parameterType="java.util.Map"
+        resultMap="userPeristalsisResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `userPeristalsis`.`user_id` = #{userId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,71 @@
+<div style="padding: 150px 10px; max-width: 1200px; margin: 0 auto;">
+    <el-divider content-position="left">자료실</el-divider>
+    <template v-for="(item, idx) in data.dataList">
+        <div style="width: 90%; margin: 25px auto; border: 2px solid #e7e7e7; border-radius: 12px;">
+            <v-row>
+                <v-col cols="4">
+                    <el-input 
+                        style="width: 90%; margin: 5px;" 
+                        placeholder="title" v-model="item.title" 
+                    />
+                </v-col>
+                <v-col cols="4">
+                    <el-input 
+                        style="width: 90%; margin: 5px;" 
+                        placeholder="subtitle" v-model="item.subtitle" 
+                    />
+                </v-col>
+            </v-row>
+            <template v-for="(item2, idx2) in item.files">
+                <v-row>
+                    <v-col cols="1"></v-col>
+                    └
+                    <template v-if="item2.id == null && item2.id == undefined">
+                        <v-col cols="4">
+                            <v-file-input type="file" v-model="item2.file" dense
+                                :id="'inputFile' + idx + idx2"
+                            />
+                            <label @click="$refs.inputFile.click();" />
+                        </v-col>
+                    </template>
+                    <template v-else>
+                        <v-col cols="4">
+                            <v-file-input type="file" v-model="item2.file" dense disabled
+                                :label="item2.originFileNm" :id="'inputFile' + idx + idx2"
+                            />
+                            <label @click="$refs.inputFile.click();" />
+                        </v-col>
+                    </template>
+                    <v-col cols="1">
+                        <v-btn x-large icon style="color: mediumslateblue; height: auto" 
+                            @click="addDataFileList(idx)">
+                            <v-icon>mdi-plus-circle-outline</v-icon>
+                        </v-btn>
+                    </v-col>
+                    <!--<v-col cols="1">
+                        <v-btn x-large icon style="color: red; height: auto;"
+                            @click="deleteDataFileList(item2.id, idx, idx2)">
+                            <v-icon>mdi-minus-circle-outline</v-icon>
+                        </v-btn>
+                    </v-col>-->
+                </v-row>
+            </template>
+            <v-row>
+                <v-col cols="10" />
+                <v-col cols="1">
+                    <v-btn x-large icon style="color: mediumslateblue; height: auto; margin: 5px; float: right;"
+                        @click="addDataList()">
+                        <v-icon>mdi-plus-circle-outline</v-icon>
+                    </v-btn>
+                </v-col>
+                <!--<v-col cols="1">
+                    <v-btn x-large icon style="color: red; height: auto;"
+                        @click="deleteDataList(item.id, idx)">
+                        <v-icon>mdi-minus-circle-outline</v-icon>
+                    </v-btn>
+                </v-col>-->
+            </v-row>
+        </div>
+    </template>
+    <v-btn outlined style="float: right;" @click="save()">완료</v-btn>
+</div>

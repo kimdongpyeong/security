@@ -1,0 +1,480 @@
+<v-data-table
+    :dense="dense"
+    v-model="data"
+    :show-select="showSelect"
+    :item-key="itemKey"
+    :headers="headers"
+    :items="items"
+    :server-items-length="totalRows"
+    :page="options.page"
+    :items-per-page="options.itemsPerPage"
+    :sort-by="options.sortBy"
+    :sort-desc="options.sortDesc"
+    :multi-sort="options.multiSort"
+    :must-sort="options.mustSort"
+    @update:options="options = $event;"
+    :loading="loading"
+    :disable-sort="disabled"
+    mobile-breakpoint="0"
+    hide-default-header
+    hide-default-footer
+    :class="contentClass"
+>
+    <template v-slot:top="props">
+        <v-row class="my-1" :dense="dense" v-if="!countHide && !customHide && !createdHide && !downloadHide && !itemsPerPageHide">
+            <v-col class="d-flex justify-start align-end">
+                <template v-if="!countHide">
+                    <div style="width: 200px;">
+                        <h3 class="text-left">{{count}}</h3>
+                    </div>
+                </template>
+                <template v-if="!customHide">
+                    <v-btn elevation="0" class="btn-blue ml-auto" @click="customFunction">{{customButtonTxt !== undefined && customButtonTxt != null ? customButtonTxt : ""}}</v-btn>
+                </template>
+                <template v-if="!createdHide">
+                    <v-btn elevation="0" :class="`btn-blue ${customHide ? 'ml-auto' : 'ml-1'}`" @click="moveCreatePage()">등록</v-btn>
+                </template>
+                <template v-if="!downloadHide">
+                    <v-btn elevation="0" :class="`btn-blue ${customHide ? 'ml-auto' : 'ml-1'}`" @click="download">엑셀다운</v-btn>
+                </template>
+                <template v-if="!itemsPerPageHide">
+                    <div style="width: 150px;" :class="(downloadHide && customHide) ? 'ml-auto' : 'ml-1'">
+                      <v-select
+                          dense
+                          outlined
+                          hide-details="auto"
+                          :value="options.itemsPerPage"
+                          :items="paginationList"
+                          @change="options.itemsPerPage = $event;"
+                          @change="options.page = 1;"
+                         >
+                      </v-select>
+                   </div>
+                </template>
+            </v-col>
+        </v-row>
+        <div class="mx-1 mb-1">
+            <slot name="top-body"></slot>
+        </div>
+    </template>
+    <template v-slot:header="headerSlot">
+        <thead class="v-data-table-header">
+            <template v-if="maxRow === 1">
+                <tr>
+                    <template v-if="showSelect">
+                            <th scope="col" class="text-start" style="width: 1px; min-width: 1px;">
+                                <template v-if="multipleSelect">
+                                    <v-checkbox
+                                        v-model="checkAll"
+                                        @change="headerSlot.on['toggle-select-all']"
+                                        :disabled="items.length === 0"
+                                        :indeterminate="indeterminate"
+                                        class="radio--margin-none"
+                                        hide-details
+                                        color="normal"
+                                        style="margin: auto !important; max-width: fit-content;"
+                                    />
+                                </template>
+                                <template v-else>
+                                </template>
+                            </th>
+                    </template>
+                    <template v-for="(header, headerKey) in headers" :key="headerKey">
+                        <th
+                            v-if="($vuetify.breakpoint.mdAndDown ? !header.isNotMobile : true)"
+                            @click="header.sortable && items.length > 0 ? headerSlot.on.sort(header.value) : null"
+                            scope="col"
+                            :colspan="header.colspan"
+                            :rowspan="header.rowspan"
+                            :class="(header.sortable && items.length > 0  ? 'sortable' : '') + (headerSlot.props.options.sortBy.indexOf(header.value) !== -1 ? ' active' : '')"
+                            class="text-center"
+                            :style="header.width ? (isNaN(Number(header.width)) ? ('width: ' + header.width + '; min-width: ' + header.width +';'): ('width: ' + header.width + 'px; min-width: ' + header.width + 'px;')) : ''"
+                        >
+                            <template>
+                                <runtime-template-compiler :template="`&lt;span class='ma-0 pa-0'&gt;${header.text !== undefined && header.text != null ? header.text : ''}&lt;/span&gt;`"/>
+                            </template>
+                            <template v-if="header.sortable&& items.length > 0">
+                             <v-icon
+                                 size="18"
+                                 class="v-data-table-header__icon"
+                             >
+                                 <template v-if="headerSlot.props.options.sortDesc[headerSlot.props.options.sortBy.indexOf(header.value)]">
+                                     mdi-arrow-down
+                                 </template>
+                                 <template v-else>
+                                     mdi-arrow-up
+                                 </template>
+                             </v-icon>
+                            </template>
+                        </th>
+                    </template>
+                </tr>
+            </template>
+            <template v-else>
+                <template v-for="(row, rowkey) in maxRow" :key="rowkey">
+                    <tr>
+                        <template v-if="showSelect && row === 1">
+                            <th :rowspan="maxRow" scope="col" class="text-start" style="width: 1px; min-width: 1px;">
+                                <template v-if="multipleSelect">
+                                    <v-checkbox
+                                        v-model="checkAll"
+                                        @change="headerSlot.on['toggle-select-all']"
+                                        :disabled="items.length === 0"
+                                        :indeterminate="indeterminate"
+                                        class="radio--margin-none"
+                                        hide-details
+                                        color="normal"
+                                        style="margin: auto !important; max-width: fit-content;"
+                                    />
+                                </template>
+                                <template v-else>
+                                </template>
+                            </th>
+                        </template>
+                        <template v-for="(header, headerKey) in headers" :key="headerKey">
+                            <template v-if="row === header.row">
+                                <th
+                                    v-if="($vuetify.breakpoint.mdAndDown ? !header.isNotMobile : true)"
+                                    @click="header.sortable && items.length > 0 ? headerSlot.on.sort(header.value) : null"
+                                    scope="col"
+                                    :colspan="header.colspan"
+                                    :rowspan="header.rowspan"
+                                    :class="(header.sortable && items.length > 0  ? 'sortable' : '') + (headerSlot.props.options.sortBy.indexOf(header.value) !== -1 ? ' active' : '')"
+                                    :style="header.width ? (isNaN(Number(header.width)) ? ('width: ' + header.width + '; min-width: ' + header.width +';'): ('width: ' + header.width + 'px; min-width: ' + header.width + 'px;')) : ''"
+                                >
+                                    <template>
+                                        <runtime-template-compiler :template="`&lt;span class='ma-0 pa-0'&gt;${header.text !== undefined && header.text != null ? header.text : ''}&lt;/span&gt;`"/>
+                                    </template>
+                                    <template v-if="header.sortable&& items.length > 0">
+                                        <v-icon
+                                            size="18"
+                                            class="v-data-table-header__icon"
+                                        >
+                                            <template v-if="headerSlot.props.options.sortDesc[headerSlot.props.options.sortBy.indexOf(header.value)] === 'true' || headerSlot.props.options.sortDesc[headerSlot.props.options.sortBy.indexOf(header.value)] === true">
+                                                mdi-arrow-down
+                                            </template>
+                                            <template v-else>
+                                                mdi-arrow-up
+                                            </template>
+                                        </v-icon>
+                                    </template>
+                                </th>
+                            </template>
+                        </template>
+                    </tr>
+                </template>
+            </template>
+        </thead>
+    </template>
+    <template v-if="items.length !== 0" v-slot:body="props">
+        <tbody
+            :key="dataTableRepaint">
+            <tr :class="getClass(rowClassConditional, item)" v-for="(item, rKey) in props.items" :key="item[itemKey]">
+                <td v-if="showSelect">
+                    <container
+                        class="ma-0 pa-0 d-flex justify-center align-center" style="width:100%; height: 100%;">
+                        <template v-if="isTrue(checkboxConditional, item)">
+                            <template v-if="multipleSelect">
+                                <v-checkbox
+                                    v-model="data"
+                                    :value="item"
+                                    multiple
+                                    class="radio--margin-none"
+                                    hide-details
+                                    style="margin: auto !important; max-width: fit-content;"
+                                />
+                            </template>
+                            <template v-else>
+                                <v-radio-group v-model="rediaoData">
+                                    <v-radio
+                                    class="radio--margin-none"
+                                    hide-details
+                                    :value="item"/>
+                                </v-radio-group>
+                            </template>
+                        </template>
+                    </container>
+                </td>
+                <template v-for="(header, headerKey) in headers" :key="headerKey">
+                    <td v-if="!header.colspan && ($vuetify.breakpoint.mdAndDown ? !header.isNotMobile : true)" :class="header.cellClass" @click="clickRow(item)">
+                        <template v-if="header.prependText !== undefined && header.prependText !== null && header.prependText !== ''">
+                            <span>{{header.prependText}}</span>
+                        </template>
+                        <template v-if="header.type === 'icon'">
+                            <v-icon
+                                class="mr-2"
+                                @click.stop="clickIcon(item, header.value)"
+                            >{{cell[header.type][header.value].title}}</v-icon>
+                        </template>
+                        <template v-else-if="header.type === 'autocomplete'">
+                            <v-autocomplete
+                                v-model="cell.status[rKey]"
+                                dense
+                                outlined
+                                hide-details
+                                :items="cell[header.type][header.value].items"
+                                @click.stop
+                                @change="changeAutocomplete($event, header.value, item)"
+                            ></v-autocomplete>
+                        </template>
+                        <template v-else-if="header.type === 'button'">
+                            <v-btn
+                                v-if="isTrue(cell[header.type][header.value].conditional, item)"
+                                hide-details
+                                :x-small="cell[header.type][header.value].xsmall"
+                                :small="cell[header.type][header.value].small"
+                                :x-large="cell[header.type][header.value].xlarge"
+                                :large="cell[header.type][header.value].large"
+                                :class="cell[header.type][header.value].contentClass"
+                                @click.native.stop="clickButton(item, header.value)"
+                            >{{item[header.value] ? item[header.value] : cell[header.type][header.value].title}}</v-btn>
+                        </template>
+                        <template v-else-if="header.type === 'textField'">
+                            <v-text-field
+                                hide-details
+                                @click.stop
+                                @input="inputTextField($event, item, header.value)"
+                                dense
+                                outlined
+                                :suffix="cell[header.type][header.value].suffix"
+                            ></v-text-field>
+                        </template>
+                        <template v-else-if="header.type === 'clickAfterTextField'">
+                            <v-text-field
+                                v-model="cell[header.type].memo[rKey]"
+                                :readonly="cell[header.type].readonlyFlag[rKey]"
+                                hide-details
+                                @click.stop="toggleStatus(header.type, rKey)"
+                                @input="inputClickAfterTextField($event, item, header.value)"
+                                @keydown.enter="enterTextField(item, header.type, rKey)"
+                                dense
+                                outlined
+                                :suffix="cell[header.type][header.value].suffix"
+                            ></v-text-field>
+                        </template>
+                        <template v-else-if="header.type === 'img'">
+                            <v-img
+                                v-if="item[header.value] !== undefined && item[header.value] !== null && item[header.value] !== ''"
+                                :src="cell[header.type][header.value].src"
+                                :alt="cell[header.type][header.value].alt"
+                                :width="cell[header.type][header.value].width"
+                                :height="cell[header.type][header.value].height"
+                                :class="cell[header.type][header.value].contentClass"
+                                @click.stop="clickImg(item, header.value)"
+                            ></v-img>
+                        </template>
+                        <template v-else-if="header.type === 'multiButton'">
+                            <template v-for="button in cell[header.type][header.value].buttonList">
+                                <v-btn
+                                    x-small
+                                    v-if="isTrue(button.conditional, item)"
+                                    :color="button.color"
+                                    :class="button.contentClass"
+                                    @click.stop="clickMultiButton(item, header.value, button.title)"
+                                >{{button.title}}</v-btn>
+                            </template>
+                        </template>
+                        <template v-else-if="header.type === 'textOrMultiButton'">
+                            <template v-if="isTrue(cell[header.type][header.value].conditional, item)">
+                                <span>{{item[header.value]}}</span>
+                            </template>
+                            <template v-else>
+                                <template v-for="button in cell[header.type][header.value].buttonList">
+                                    <v-btn
+                                        x-small
+                                        v-if="isTrue(button.conditional, item)"
+                                        :color="button.color"
+                                        :class="button.contentClass"
+                                        @click.stop="clickMultiButton(item, header.value, button.title)"
+                                    >{{button.title}}</v-btn>
+                                </template>
+                            </template>
+                        </template>
+                        <template v-else-if="header.type === 'htmlAndMultiButton'">
+                            <!-- <div @click.stop="clickHtml(item, header.value)" v-html="item[header.value]"></div> -->
+                            <div @click.stop="clickHtml(item, header.value)">
+                                <template>
+                                    <runtime-template-compiler :template="`&lt;v-container class='ma-0 pa-0'&gt;${item[header.value] !== undefined && item[header.value] != null ? item[header.value] : ''}&lt;/v-container&gt;`"/>
+                                </template>
+                            </div>
+                            <template v-for="button in cell[header.type][header.value].buttonList">
+                                <v-btn
+                                    x-small
+                                    v-if="isTrue(button.conditional, item)"
+                                    :color="button.color"
+                                    :class="button.contentClass"
+                                    @click.stop="clickMultiButton(item, header.value, button.title)"
+                                >{{button.title}}</v-btn>
+                            </template>
+                        </template>
+                        <template v-else-if="header.type === 'checkBoxActiveAboutMultiButton'">
+                            <v-checkbox
+                                v-if="cell[header.type][header.value].buttonList !== undefined && cell[header.type][header.value].buttonList != null &&
+                                cell[header.type][header.value].buttonList.filter(e => isTrue(e.conditional, item)).length > 0
+                                "
+                                v-model="item[`isActiveMultiButton${headerKey}`]"
+                                class="radio--margin-none"
+                                hide-details
+                                style="margin: auto !important; max-width: fit-content;"
+                            />
+                            <v-tooltip
+                                v-else
+                                bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-icon
+                                        color="primary"
+                                        dark
+                                        small
+                                        v-bind="attrs"
+                                        v-on="on"
+                                    >
+                                    mdi-help
+                                    </v-icon>
+                                </template>
+                                <span>{{item[header.value]}}</span>
+                            </v-tooltip>
+                            <template v-for="(button, bKey) in cell[header.type][header.value].buttonList">
+                                <v-btn
+                                    :disabled="item[`isActiveMultiButton${headerKey}`] === undefined || item[`isActiveMultiButton${headerKey}`] == null || !item[`isActiveMultiButton${headerKey}`]"
+                                    x-small
+                                    v-if="isTrue(button.conditional, item)"
+                                    :color="button.color"
+                                    :class="button.contentClass"
+                                    @click.stop="clickMultiButton(item, header.value, button.title)"
+                                >{{button.title}}</v-btn>
+                            </template>
+                        </template>
+                        <template v-else-if="header.type === 'checkBoxByValue'">
+                            <v-checkbox
+                                readonly
+                                v-model="item[header.value]"
+                                class="radio--margin-none"
+                                true-value="T"
+                                false-value="F"
+                                hide-details
+                                style="margin: auto !important; max-width: fit-content;"
+                                @click.native.stop="clickButton(item, header.value)"
+                            />
+                        </template>
+                        <template v-else-if="header.type === 'htmlAndMultiImage'">
+                            <div :class="cell[header.type][header.value].contentClass">
+                                <div class="float-left" @click.stop="clickHtml(item, header.value)">
+                                    <template>
+                                        <runtime-template-compiler :template="`&lt;v-container class='ma-0 pa-0'&gt;${item[header.value] !== undefined && item[header.value] != null ? item[header.value] : ''}&lt;/v-container&gt;`"/>
+                                    </template>
+                                </div>
+                                <template v-for="img in cell[header.type][header.value].imgList">
+                                    <v-img
+                                        v-if="isTrue(img.conditional, item)"
+                                        :src="img.src"
+                                        :alt="img.alt"
+                                        :width="img.width"
+                                        :height="img.height"
+                                        @click.native.stop="clickImg(item, header.value)"
+                                    ></v-img>
+                                </template>
+                            </div>
+                        </template>
+                        <template v-else-if="header.type === 'textImage'">
+                            <v-row :class="cell[header.type][header.value].contentClass">
+                                <v-col cols="auto" class="pr-0">
+                                    {{item[header.value]}}
+                                </v-col>
+                                <v-col class="pl-0">
+                                    <v-img
+                                        v-if="isTrue(cell[header.type][header.value].conditional, item)"
+                                        :src="cell[header.type][header.value].src"
+                                        :alt="cell[header.type][header.value].alt"
+                                        :width="cell[header.type][header.value].width"
+                                        :height="cell[header.type][header.value].height"
+                                        @click.native.stop="clickImg(item, header.value)"
+                                    ></v-img>
+                                </v-col>
+                            </v-row>
+                        </template>
+                        <template v-else-if="header.type === 'styleText'">
+                            <span
+                                :class="getClass(cell[header.type][header.value].conditional, item)"
+                                @click.stop="clickStyleText(item, header.value)"
+                            >{{item[header.value]}}</span>
+                        </template>
+                        <template v-else-if="header.type === 'currency'">
+                            <span>{{numeral(item[header.value]).format("0,0")}}</span>
+                        </template>
+                        <template v-else-if="header.type === 'tooltip'">
+                            <v-tooltip top>
+                                <template v-slot:activator="act">
+                                    <span v-on="act.on" v-bind="act.attrs">{{item[header.value]}}</span>
+                                </template>
+                                {{item[header.value]}}
+                            </v-tooltip>
+                        </template>
+                        <template v-else-if="header.type === 'html'">
+                            <div @click.stop="clickHtml(item, header.value)">
+                                <template>
+                                    <runtime-template-compiler :template="`&lt;v-container class='ma-0 pa-0'&gt;${item[header.value] !== undefined && item[header.value] != null ? item[header.value] : ''}&lt;/v-container&gt;`"/>
+                                </template>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <span>{{item[header.value]}}</span>
+                        </template>
+                        <template v-if="header.appendText !== undefined && header.appendText !== null && header.appendText !== ''">
+                            <span>{{header.appendText}}</span>
+                        </template>
+                    </td>
+                </template>
+            </tr>
+        </tbody>
+    </template>
+    <template v-else v-slot:body>
+        <tbody>
+            <tr>
+                <td v-if="loading" :colspan="headers.length + (showSelect ? 1 : 0)" class="text-center">
+                    <h4 style="opacity: 0.4;">데이터 가져오는 중...</h4>
+                </td>
+                <td v-else :colspan="headers.length + (showSelect ? 1 : 0)" class="text-center">
+                    <div class="py-3">
+                        <v-icon size="200" style="opacity: 0.12;">
+                            mdi-database-remove-outline
+                        </v-icon>
+                        <br>
+                        <h4 style="opacity: 0.4;">데이터가 없습니다.</h4>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </template>
+    <template v-slot:footer>
+        <v-row dense>
+            <v-col cols="12" class="pa-0">
+                <div class="text-center my-4" >
+                    <v-pagination
+                        class="d-inline-block"
+                        :length="Math.ceil(totalRows / options.itemsPerPage)"
+                        :total-visible="10"
+                        v-model="options.page"
+                        :disabled="disabled"
+                    ></v-pagination>
+                </div>
+            </v-col>
+            <v-col cols="12" class="pa-0 d-flex justify-end align-center">
+                <v-btn
+                    v-if="!uploadHide"
+                    color="primary"
+                    @click="excelUpload"
+                >업로드</v-btn>
+                <v-btn
+                    v-if="!addHide"
+                    class="ml-3"
+                    @click="add"
+                >추가</v-btn>
+                <v-btn
+                    v-if="!removeHide"
+                    class="ml-3"
+                    @click="remove"
+                >삭제</v-btn>
+            </v-col>
+        </v-row>
+    </template>
+ </v-data-table>

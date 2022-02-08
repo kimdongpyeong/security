@@ -1,0 +1,95 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>약관 관리 상세</h1>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-expansion-panels
+                multiple
+                v-model="terms_detail.panels.list"
+            >
+                <v-expansion-panel>
+                    <v-expansion-panel-header>약관 관리 상세</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <v-row>
+                            <div style="width:100%;display: flex;justify-content: center;margin-bottom:20px">
+                                <v-card width="50%">
+                                    <v-card-title>약관 상세</v-card-title>
+                                    <v-card-text>
+                                        <v-form>
+                                            <v-row dense>
+                                                <v-col cols="12">
+                                                    <v-text-field
+                                                        dense
+                                                        outlined
+                                                        clearable
+                                                        hide-no-data
+                                                        label="약관 제목"
+					                                    maxlength="100"
+					                                    counter
+                                                        hide-details="auto"
+                                                        v-model="detailData.title"
+                                                        style="margin-bottom:15px"
+                                                    ></v-text-field>
+                                                    <v-textarea
+                                                      outlined
+                                                      label="약관 내용"
+					                                  maxlength="16777215"
+					                                  counter
+                                                      v-model="detailData.contents"
+                                                      hide-details="auto"
+                                                    ></v-textarea>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row dense>
+                                                <v-col cols="6">
+                                                    <div class="publishBox" style="text-align: center; border: 1px solid #EAEAEA;">
+                                                        <h3 class="pt-2">게시여부</h3><br>
+                                                        <div class="pb-2">
+                                                            <el-radio v-model="detailData.publishYn" label="Y">Y</el-radio>
+                                                            <el-radio v-model="detailData.publishYn" label="N">N</el-radio>
+                                                        </div>
+                                                    </div>
+                                                </v-col>
+                                                <v-col cols="6">
+                                                    <div class="requiredBox" style="text-align: center; border: 1px solid #EAEAEA;">
+                                                        <h3 class="pt-2">필수여부</h3><br>
+                                                        <div class="pb-2">
+                                                            <el-radio v-model="detailData.requiredYn" label="Y">Y</el-radio>
+                                                            <el-radio v-model="detailData.requiredYn" label="N">N</el-radio>
+                                                        </div>
+                                                    </div>
+                                                </v-col>
+                                                <v-col cols="12" class="pt-3">
+                                                    <v-text-field
+                                                        v-if="detailData.id != undefined && detailData.id != null"
+                                                        v-model="detailData.createdDate"
+                                                        dense
+                                                        outlined
+                                                        clearable
+                                                        label="생성 날짜"
+                                                        hide-details="auto"
+                                                        style="margin-bottom:15px"
+                                                        disabled
+                                                    ></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                        </v-form>
+                                    </v-card-text>
+                                </v-card>
+                            </div>
+                        </v-row>
+                        <div class="float-right" v-if="detailData.id != undefined && detailData.id != null">
+                            <v-btn depressed color="primary" @click="updateTerms()">수정</v-btn>
+                        </div>
+                        <div class="float-right" v-else>
+                            <v-btn depressed color="primary" @click="registerNewTerms()">저장</v-btn>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </v-col>
+    </v-row>
+</div>

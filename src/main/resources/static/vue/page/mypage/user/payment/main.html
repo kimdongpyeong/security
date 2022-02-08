@@ -1,0 +1,68 @@
+<div class="banner">
+    <div class="container_z" style="display: block; text-align: center; margin-top: 150px;">
+        이름 {{ data.paymentHistory.requestLecturerNm }} <br><br>
+        금액 {{ numeral(data.paymentHistory.amount).format('0,0') + '원'}}<br><br>
+        번호 {{ data.paymentHistory.phoneNum }}<br><br>
+        유형 {{(data.paymentHistory.paymentType == 'S')? '단건' : '정기'}} 결제
+        <br><br>
+<!--         결제방식 -->
+<!--         <el-button>변경하기</el-button> -->
+
+        <button type="button" class="main-btn" @click="requestKakaoPayment">카카오페이 결제</button>
+        <br>
+        <br>
+        <button type="button" class="main-btn" @click="regularPaymentDialog">토스 카드등록</button>
+        <br>
+        <br>
+        <button type="button" class="main-btn" @click="regularPayment">토스 정기 결제</button>
+        <br>
+        <br>
+        <button type="button" class="main-btn" @click="cardPayment">신용/체크카드 결제</button>
+        <br>
+        <br>
+        <button type="button" class="main-btn" @click="moneyPayment">무통장/가상계좌 결제</button>
+        <br>
+        <br>
+        <button type="button" class="main-btn" @click="searchOrder">결제조회</button>
+
+        <button type="button" @click="cancelCardPayment">카드 결제취소</button>
+        <button type="button" @click="cancelMoneyPayment">무통장 결제취소</button>
+    </div>
+
+    <el-dialog
+        title="결제요청"
+        :visible.sync="visible.regularPaymentDialog"
+        class="pop-wrap leacture-pop-wrap"
+        width="40%"
+        center>
+        <h4>결제 요청 정보를 입력해주세요. 요청 대상에 대한 정보를 정확하게 입력해 주시기 바랍니다. 입력된 번호로 결제 요청 카톡 알람이 전송됩니다.</h4>
+        <form action="" method="GET">
+            <div class="content">
+                <label for="name">카드번호</label>
+                <input type="text" name="name" id="name" v-model="data.payment.cardNumber" placeholder="카드번호">
+            </div>
+            <div class="content">
+                <label for="name">만료년</label>
+                <input type="text" name="name" id="name" v-model="data.payment.cardExpirationYear" placeholder="만료년" maxlength="2">
+            </div>
+            <div class="content">
+                <label for="name">만료월</label>
+                <input type="text" name="name" id="name" v-model="data.payment.cardExpirationMonth" placeholder="만료월" maxlength="2">
+            </div>
+            <div class="content">
+                <label for="name">비밀번호 앞 2자리</label>
+                <input type="text" name="name" id="name" v-model="data.payment.cardPassword" placeholder="비밀번호 2자리" maxlength="2">
+            </div>
+            <div class="content">
+                <label for="name">생년월일</label>
+                <input type="text" name="name" id="name" v-model="data.payment.customerBirthday" placeholder="생년월일" maxlength="6">
+            </div>
+            <div class="btn-group">
+                <button class="cancel-btn" type="button" @click="visible.regularPaymentDialog = false;">취소하기</button>
+                <button class="main-btn create-btn" type="button" @click="createBillingKey">요청하기</button>
+            </div>
+        </form>
+    </el-dialog>
+
+
+</div>

@@ -1,0 +1,152 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>역할 관리 상세</h1>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-expansion-panels
+                multiple
+                v-model="role_detail.panels.list"
+            >
+                <v-expansion-panel>
+                    <v-expansion-panel-header>역할 관리 상세</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <v-row>
+                            <div style="width:100%;display: flex;justify-content: center;margin-bottom:20px">
+                                <v-card width="50%">
+                                    <v-card-title>역할 상세</v-card-title>
+                                    <v-card-text>
+                                        <v-form>
+                                            <v-row dense>
+                                                <v-col cols="12">
+                                                            <v-text-field
+                                                                v-model="detailData.name"
+                                                                dense
+                                                                outlined
+                                                                clearable
+                                                                label="권한명"
+                                                                hide-details="auto"
+                                                                style="margin-bottom:15px"
+                                                            ></v-text-field>
+
+                                                            <v-text-field
+                                                                v-model="detailData.description"
+                                                                dense
+                                                                outlined
+                                                                clearable
+                                                                label="설명"
+                                                                hide-details="auto"
+                                                                style="margin-bottom:15px"
+                                                            ></v-text-field>
+                                                            <v-text-field
+                                                                v-model="detailData.value"
+                                                                dense
+                                                                outlined
+                                                                clearable
+                                                                label="값"
+                                                                hide-details="auto"
+                                                                style="margin-bottom:15px"
+                                                            ></v-text-field>
+                                                            <v-text-field
+                                                                v-if="detailData.id != undefined && detailData.id != null"
+                                                                v-model="detailData.createdDate"
+                                                                dense
+                                                                outlined
+                                                                clearable
+                                                                label="생성 날짜"
+                                                                hide-details="auto"
+                                                                style="margin-bottom:15px"
+                                                                disabled
+                                                            ></v-text-field>
+                                                            <v-text-field
+                                                                v-if="detailData.id != undefined && detailData.id != null"
+                                                                v-model="detailData.lastModifiedDate"
+                                                                dense
+                                                                outlined
+                                                                clearable
+                                                                label="마지막 수정 날짜"
+                                                                hide-details="auto"
+                                                                style="margin-bottom:15px"
+                                                                disabled
+                                                            ></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                        </v-form>
+                                    </v-card-text>
+                                </v-card>
+                            </div>
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="12" sm="6">
+                                <v-card>
+                                    <v-card-title>역할 메뉴</v-card-title>
+                                    <v-card-text>
+                                        <div style="max-height: 500px; overflow-y: auto;">
+                                            <v-treeview
+                                                dense
+                                                activatable
+                                                selectable
+                                                return-object
+                                                :items="treeview.menuList.items"
+                                                :open.sync="treeview.menuList.open"
+                                                v-model="menuSelected"
+                                            >
+                                                <template v-slot:prepend="{ item, open }">
+                                                    <template v-if="item.childrenCount > 0">
+                                                        <template v-if="open">
+                                                            <v-icon>mdi-folder-open</v-icon>
+                                                        </template>
+                                                        <template v-else>
+                                                            <v-icon>mdi-folder</v-icon>
+                                                        </template>
+                                                    </template>
+                                                    <template v-else>
+                                                        <v-icon>mdi-file</v-icon>
+                                                    </template>
+                                                </template>
+                                                <template v-slot:label="{ item }">
+                                                    <div style="cursor: pointer;">{{ item.name + ' (순위 : ' + item.ranking + ')' }}</div>
+
+                                                </template>
+                                            </v-treeview>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6">
+                                <v-card>
+                                    <v-card-title>역할 API</v-card-title>
+                                    <v-card-text>
+                                        <div style="max-height: 500px; overflow-y: auto;">
+                                            <template>
+                                                   <v-data-table
+                                                        fixed-header
+                                                        hide-default-footer
+                                                        height="auto"
+                                                        show-select
+                                                        v-model="api.apiSelected"
+                                                        items-per-page="10000"
+                                                        :headers="api.dataTable.headers"
+                                                        :items="api.dataTable.items"
+                                                    >
+                                                    </v-data-table>
+                                            </template>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                        <div class="float-right" v-if="detailData.id != undefined && detailData.id != null">
+                            <v-btn depressed color="primary" @click="updateRole()">수정</v-btn>
+                        </div>
+                        <div class="float-right" v-else>
+                            <v-btn depressed color="primary" @click="registerNewRole()">저장</v-btn>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </v-col>
+    </v-row>
+</div>

@@ -1,0 +1,120 @@
+<div style="padding: 50px 10px; max-width: 1200px; margin: 0 auto;" v-else>
+    <el-divider content-position="left">라이브 생성</el-divider>
+    <v-row dense>
+        <v-col cols="1"></v-col>
+        <v-col cols="10">
+            <input type="file" v-model="data.tempImg" ref="thumbnail"
+                    accept="image/*" style="display:none;" @change="thumbFile($event);" />
+            <label @click="$refs.thumbnail.click();">              
+                <img  :src="data.classRoom.thumbnailSrc" alt="이미지"
+                    width="880" height="500" />
+            </label>
+        </v-col>
+    </v-row>
+    <el-divider></el-divider>
+    <v-row>
+        <v-col cols="1"></v-col>
+        <v-col cols="4">
+            <el-input
+                v-model="data.classRoom.title"
+                placeholder="라이브 제목"
+                type="primary"
+            ></el-input>
+        </v-col>
+        <v-col cols="3">
+            <el-input
+                style="width: 70%;"
+                placeholder="종료시간"
+                v-model="data.timeSet.endHour" readonly
+            />
+            <span class="demo-input-label">시간</span>
+        </v-col>
+        <v-col cols="3">
+            <el-input
+                style="width: 70%;"
+                placeholder="종료분"
+                v-model="data.timeSet.endMin" readonly
+            />
+            <span class="demo-input-label">분</span>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="3"></v-col>
+        <v-col cols="3">
+            <label for="lecturePersonnel">인원설정</label>
+            <select name="lecturePersonnel" id="lecturePersonnel" v-model="data.classRoom.memberNum" style="width: 150px;">
+                <option value="">인원을 선택하세요</option>
+                <template v-for="item in numberList">
+                    <option :value="item">{{item}}</option>
+                </template>
+            </select>
+        </v-col>
+        <v-col cols="3">
+            <label for="lectureType">카테고리</label>
+            <select name="lectureType" id="lectureType" style="width: 140px;" 
+                v-model="data.classRoom.categoryId">
+                <option value="">선택</option>
+                <template v-for="item in data.categoryList">
+                    <option :value="item.id">{{item.text}}</option>
+                </template>
+            </select>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="3"></v-col>
+        <v-col cols="2">
+            <input type="radio" id="O" value="O" v-model="data.classRoom.openType" >
+            <label for="O">공개</label>
+            <input type="radio" id="C" value="C" v-model="data.classRoom.openType">
+            <label for="C">비공개</label>
+        </v-col>
+    </v-row>
+    <template v-for="(liveTime, idx) in data.liveTimeList">
+        <v-row>
+            <v-col cols="2"></v-col>
+            └
+            <v-col cols="3">
+                <el-date-picker
+                    v-model="liveTime.startDate"
+                    type="date"
+                    placeholder="시작일"
+                    value-format="yyyyMMdd"
+                ></el-date-picker>
+            </v-col>
+            <v-col cols="3">
+                <el-time-picker
+                    type="minute"
+                    v-model="liveTime.startTime"
+                    value-format="HH:mm"
+                    placeholder="시작시간"
+                ></el-time-picker>
+            </v-col>
+            <template>
+                <v-col cols="1">
+                    <v-btn x-large icon
+                        style="color: mediumslateblue; height: auto"
+                        @click="setLiveTimeList">
+                        <v-icon>mdi-plus-circle-outline</v-icon>
+                    </v-btn>
+                </v-col>
+            </template>
+            <template>
+                <v-col cols="1">
+                    <v-btn x-large icon
+                        style="color: red; height: auto;"
+                        @click="deleteLiveTimeListRow(liveTime.id,idx)">
+                        <v-icon>mdi-minus-circle-outline
+                        </v-icon>
+                    </v-btn>
+                </v-col>
+            </template>
+        </v-row>
+    </template>
+
+    <v-row>
+        <v-col cols="9"></v-col>
+        <v-col cols="2">
+            <v-btn outlined @click="save()">방생성</v-btn>
+        </v-col>
+    </v-row>
+</div>

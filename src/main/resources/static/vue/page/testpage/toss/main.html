@@ -1,0 +1,9 @@
+<div>
+    <input type="text" v-model="data.cardNum" placeholder="카드번호">
+    <input type="text" v-model="data.year" placeholder="유효기간(년)">
+    <input type="text" v-model="data.month" placeholder="유효기간(월)">
+    <input type="password" v-model="data.password" placeholder="비밀번호 앞 2자리">
+    <input type="text" v-model="data.birthDay" placeholder="생년월일 6자리">
+    <button type="button" @click="openPayments">결제창</button>
+    <button type="button" @click="orderSearch">주문조회</button>
+</div>

@@ -1,0 +1,78 @@
+<div class="banner">
+    <div class="container_z">
+        <template v-if="!name">
+            <div class="txt-box">
+                <h2>
+                    프리랜서 강사와 크리에이터를 위한 <br class="pc">
+                    <strong>원스탑 서비스</strong>
+                </h2>
+                <div class="btn-group">
+                    <button @click="$store.state.app.loginPopFlag = true">무료로 시작하기</button>
+                    <a class="main-btn" href="javascript:void(0);" @click="demoVideo">데모 영상 보기</a>
+                </div>
+            </div>
+            <div class="img-box"><img src="/resources/img/main-before.png" alt=""></div>
+        </template>
+        <template v-else>
+            <div class="txt-box">
+                <h2>
+                    안녕하세요 <br>
+                    <strong>Support - T 입니다</strong>
+                </h2>
+                <div class="btn-group">
+                    <button @click="openLectureDialog">강의실 생성하기</button>
+                    <a class="main-btn" href="javascript:void(0);" @click="demoVideo">데모 영상 보기</a>
+                </div>
+            </div>
+            <div class="img-box"><img src="/resources/img/main-after.png" alt=""></div>
+        </template>
+    </div>
+
+    <el-dialog
+        title="강의실 생성"
+        :visible.sync="visible.lectureDialog"
+        class="pop-wrap leacture-pop-wrap"
+        width="40%"
+        center>
+        <h4>줌을 연동하여 오프라인 강의를 진행해 보세요.</h4>
+        <form action="" method="GET">
+            <div class="content file-cont">
+                <input type="file" ref="thumbnail" accept="image/*" style="display:none;" @change="thumbFile($event);" />
+                <img :src="data.classRoom.thumbnailSrc" alt="" @click="$refs.thumbnail.click();">
+            </div>
+            <div class="content" style="text-align: right; display: flow-root;">
+                <button type="button" class="main-btn" @click="$refs.thumbnail.click();">이미지 변경</button>
+            </div>
+            <div class="content">
+                <label for="lectureName">강의</label>
+                <input type="text" name="lectureName" id="lectureName" v-model="data.classRoom.title" placeholder="강의실 이름">
+            </div>
+            <div class="content">
+                <label for="lectureType">유형</label>
+                <select name="lectureType" id="lectureType" v-model="data.classRoom.categoryId">
+                    <option value="">유형</option>
+                    <template v-for="item in data.categoryList">
+                        <option :value="item.id">{{item.text}}</option>
+                    </template>
+                </select>
+            </div>
+            <div class="content" v-if="data.classRoom.categoryId == '23'">
+                <input type="text" name="etc" id="etc" v-model="data.classRoom.etc" placeholder="기타 이름">
+            </div>
+            <div class="content">
+                <label for="lecturePersonnel">인원설정</label>
+                <select name="lecturePersonnel" id="lecturePersonnel" v-model="data.classRoom.memberNum">
+                    <option value="">인원을 선택하세요</option>
+                    <template v-for="item in data.numberList">
+                        <option :value="item">{{item}}</option>
+                    </template>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button class="cancel-btn" type="button" @click="visible.lectureDialog = false;">취소하기</button>
+                <button class="main-btn create-btn" type="button" @click="createClassRoom">생성하기</button>
+            </div>
+        </form>
+    </el-dialog>
+    <!-- //강의생성 팝업 -->
+</div>

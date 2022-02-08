@@ -1,0 +1,90 @@
+<template>
+    <div style="padding: 150px 10px; max-width: 1200px; margin: 0 auto;">
+        <el-divider content-position="left">라이브 생성</el-divider>
+        <v-row dense>
+            <v-col cols="1"></v-col>
+            <v-col cols="10">
+                <input type="file" v-model="data.temp" ref="thumbnail"
+                        accept="image/*" style="display:none;" @change="thumbFile($event);" />
+                <label @click="$refs.thumbnail.click();">               <!-- @change와 @input 두번이나 쓰는 이유는? -->
+                    <img  :src="data.thumbnailSrc" alt="이미지"
+                        width="880" height="500" />
+                </label>
+            </v-col>
+        </v-row>
+        <el-divider></el-divider>
+        <v-row>
+            <v-col cols="1"></v-col>
+            <v-col cols="4">
+                <el-input
+                    v-model="data.newLiveInfo.title"
+                    placeholder="클래스 제목"
+                    type="primary"
+                ></el-input>
+            </v-col>
+            <v-col cols="3">
+                <el-input
+                    style="width: 70%;"
+                    placeholder="종료시간"
+                    v-model="data.newLiveInfo.endHour"
+                />
+                <span class="demo-input-label">시간</span>
+            </v-col>
+            <v-col cols="3">
+                <el-input
+                    style="width: 70%;"
+                    placeholder="종료분"
+                    v-model="data.newLiveInfo.endMin"
+                />
+                <span class="demo-input-label">분</span>
+            </v-col>
+        </v-row>
+        <template v-for="(liveTime, idx) in data.newLiveTimeList">
+            <v-row>
+                <v-col cols="2"></v-col>
+                <v-col cols="3">
+                    └
+                    <el-date-picker
+                        v-model="liveTime.startDate"
+                        type="date"
+                        placeholder="시작일"
+                        value-format="yyyyMMdd"
+                    ></el-date-picker>
+                </v-col>
+                <v-col cols="3">
+                    <el-time-picker
+                        type="minute"
+                        v-model="liveTime.startTime"
+                        value-format="HH:mm"
+                        placeholder="시작시간"
+                    ></el-time-picker>
+                </v-col>
+                <template>
+                    <v-col cols="1">
+                        <v-btn x-large icon
+                            style="color: mediumslateblue; height: auto"
+                            @click="setLiveTimeList">
+                            <v-icon>mdi-plus-circle-outline</v-icon>
+                        </v-btn>
+                    </v-col>
+                </template>
+                <template>
+                    <v-col cols="1">
+                        <v-btn x-large icon
+                            style="color: red; height: auto;"
+                            @click="deleteLiveTimeListRow(liveTime.id,idx)">
+                            <v-icon>mdi-minus-circle-outline
+                            </v-icon>
+                        </v-btn>
+                    </v-col>
+                </template>
+            </v-row>
+        </template>
+
+        <v-row>
+            <v-col cols="12" justify="end">
+                <v-btn outlined @click="createLiveMeeting">방생성</v-btn>
+            </v-col>
+        </v-row>
+    </div>
+</template>

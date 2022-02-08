@@ -1,0 +1,48 @@
+<div class="goods-detail pa-3 h-100" :class="flag.blur? 'blur' : ''">
+    <v-row style="margin-top: 80px; margin-left: 50px;">
+	    <v-col cols="9">
+	        <div class="w-100 border-gray pa-2 mt-2" style="border-radius: 7px;">
+	            <div class="w-100" style="height: 30px;">
+	                <span class="font-size-14 color-gray font-weight-900 float-left">월 별 통계</span>
+	            </div>
+	            <div style="width: 550px; height: 300px;" id="test">
+	                <chart-component
+	                    :config="chart.chartStatistics"
+	                    :gradient="chart.chartStatistics.gradient"
+	                    :gradientLine="chart.chartStatistics.gradientLine"
+	                ></chart-component>
+	            </div>
+	        </div>
+	    </v-col>
+    </v-row>
+    <v-row style="margin-left: 50px;">
+        <v-col cols="9">
+            <div class="w-100 border-gray pa-2 mt-2" style="border-radius: 7px;">
+                <div class="w-100" style="height: 30px;">
+                    <span class="font-size-14 color-gray font-weight-900 float-left">월 강의 현황 차트</span>
+                </div>
+                <div style="width: 550px; height: 300px;">
+                    <chart-component
+                        :config="chart.chartClass"
+                    ></chart-component>
+                </div>
+            </div>
+        </v-col>
+    </v-row>
+    <v-row style="margin-left: 50px;">
+        <v-col cols="9">
+            <div class="w-100 border-gray pa-2 mt-2" style="border-radius: 7px;">
+                <div class="w-100" style="height: 30px;">
+                    <span class="font-size-14 color-gray font-weight-900 float-left">월 강의 현황 차트</span>
+                </div>
+                <div style="width: 550px; height: 300px;">
+                    <chart-component
+                        :config="chart.lineChart"
+                        :gradient="chart.lineChart.gradient"
+                        :gradientLine="chart.lineChart.gradientLine"
+                    ></chart-component>
+                </div>
+            </div>
+        </v-col>
+    </v-row>
+</div>

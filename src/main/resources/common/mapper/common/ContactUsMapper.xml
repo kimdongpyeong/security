@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.ContactUsMapper">
+
+    <sql id="selectFrom">
+		SELECT
+		   `contact_us`.`id`,
+		   `contact_us`.`lecturer_id`,
+           `lecturer`.`name` AS `lecturer_nm`,
+           (SELECT `profile`.`save_file_nm` FROM `tb_user_profile` `profile` WHERE `profile`.`id` = `lecturer`.`profile_id`) AS `lecturer_profile`,
+           `contact_us`.`user_id`,
+           `user`.`name` AS `user_nm`,
+           (SELECT `profile`.`save_file_nm` FROM `tb_user_profile` `profile` WHERE `profile`.`id` = `user`.`profile_id`) AS `user_profile`,
+		   `contact_us`.`completed_yn`,
+		   `contact_us`.`created_date`,
+           `contact_us`.`last_msg_date`,
+           `contact_us`.`last_msg_sender_id`,
+           `contact_us`.`last_msg_content`
+		FROM
+			`tb_contact_us` `contact_us`
+		JOIN
+            `tb_user` `lecturer`
+        ON
+            `lecturer`.`id` = `contact_us`.`lecturer_id`
+        JOIN
+            `tb_user` `user`
+        ON
+            `user`.`id` = `contact_us`.`user_id`
+            
+    </sql>
+
+    <sql id="where">
+        <where>
+        	<if test="contactUsParamDto.lecturerId != null and contactUsParamDto.lecturerId != ''">
+            	AND
+            		`contact_us`.`lecturer_id` = #{contactUsParamDto.lecturerId}
+            </if>
+        	<if test="contactUsParamDto.userId != null and contactUsParamDto.userId != ''">
+            	AND
+            		`contact_us`.`user_id` = #{contactUsParamDto.userId}
+            </if>
+        	<if test="contactUsParamDto.completedYn != null and contactUsParamDto.completedYn != ''">
+            	AND
+            		`contact_us`.`completed_yn` = #{contactUsParamDto.completedYn}
+            </if>
+            <if test="contactUsParamDto.userNm != null and contactUsParamDto.userNm != ''">
+                AND
+                    `user`.`name` LIKE CONCAT('%', #{contactUsParamDto.userNm}, '%')
+            </if>
+            <if test="contactUsParamDto.lecturerNm != null and contactUsParamDto.lecturerNm != ''">
+                AND
+                    `lecturer`.`name` LIKE CONCAT('%', #{contactUsParamDto.lecturerNm}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="contactUsResultMap" type="kr.supporti.api.common.entity.ContactUsEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerId" column="lecturer_id"/>
+        <result property="lecturerNm" column="lecturer_nm"/>
+        <result property="lecturerProfile" column="lecturer_profile"/>
+        <result property="userId" column="user_id"/>
+        <result property="userNm" column="user_nm"/>
+        <result property="userProfile" column="user_profile"/>
+        <result property="completedYn" column="completed_yn"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="lastMsgContent" column="last_msg_content"/>
+        <result property="lastMsgSenderId" column="last_msg_sender_id"/>
+        <result property="lastMsgDate" column="last_msg_date"/>
+    </resultMap>
+
+    <select
+        id="selectContactUsList"
+        parameterType="java.util.Map"
+        resultMap="contactUsResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectContactUsListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectContactUs"
+        parameterType="java.util.Map"
+        resultMap="contactUsResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `contact_us`.`id` = #{id}
+    </select>
+
+    <update
+        id="completedContactUs"
+        parameterType ="java.util.Map"
+    >
+        UPDATE
+            `tb_contact_us` `contact_us`
+        SET
+            `contact_us`.`completed_yn` = #{contactUsParamDto.completedYn}
+        WHERE
+            `contact_us`.`id` = #{contactUsParamDto.id}
+    </update>
+    
+    <update
+        id="lastUpdated"
+        parameterType ="java.util.Map"
+    >
+        UPDATE
+            `tb_contact_us` `contact_us`
+        SET
+            `contact_us`.`last_msg_content` = #{contactUsParamDto.lastMsgContent},
+            `contact_us`.`last_msg_sender_id` = #{contactUsParamDto.lastMsgSenderId},
+            `contact_us`.`last_msg_date` = now()
+            
+        WHERE
+            `contact_us`.`id` = #{contactUsParamDto.id}
+    </update>
+</mapper>

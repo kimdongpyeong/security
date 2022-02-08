@@ -1,0 +1,48 @@
+<div class="ma-3">
+    <v-row>
+        <v-col>
+            <h1>약관 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-expansion-panels
+                multiple
+                v-model="terms.panels.list"
+            >
+                <v-expansion-panel>
+                    <v-expansion-panel-header>약관 리스트</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <v-data-table
+                            fixed-header
+                            hide-default-footer
+                            height="auto"
+                            show-select
+                            v-model="terms.selected"
+                            :headers="terms.dataTable.headers"
+                            :items="terms.dataTable.items"
+                            :loading="terms.dataTable.loading"
+                            :server-items-length="terms.dataTable.serverItemsLength"
+                            :page.sync="terms.dataTable.page"
+                            :items-per-page.sync="terms.dataTable.itemsPerPage"
+                            @page-count="terms.pagination.length = $event;"
+                            @click:row="handleClick"
+                        >
+                        </v-data-table>
+                        <div>
+                            <v-pagination
+                                :length="terms.pagination.length"
+                                :total-visible="terms.pagination.totalVisible"
+                                v-model="terms.dataTable.page"
+                            ></v-pagination>
+                        </div>
+                        <div class="float-right">
+                            <v-btn depressed color="primary" @click="$router.push('/settings/terms/detail')">등록</v-btn>
+                            <v-btn depressed color="error" @click="removeTermsList();">삭제</v-btn>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </v-col>
+    </v-row>
+</div>

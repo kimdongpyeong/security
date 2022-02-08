@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.PersonalChatNoticeMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `personal_chat_notice`.`room_id`,
+            `personal_chat_notice`.`message_id`,
+            `personal_chat_notice`.`created_date`
+        FROM
+            `tb_personal_chat_notice` `personal_chat_notice`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="personalChatNoticeParamDto.roomId != null and personalChatNoticeParamDto.roomId !=''">
+                AND `personal_chat_notice`.`room_id` = #{personalChatNoticeParamDto.roomId}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="personalChatNoticeResultMap" type="kr.supporti.api.common.entity.PersonalChatNoticeEntity">
+        <result property="roomId" column="room_id"/>
+        <result property="messageId" column="message_id"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectChatNoticeList"
+        parameterType="java.util.Map"
+        resultMap="personalChatNoticeResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectChatNoticeListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+</mapper>

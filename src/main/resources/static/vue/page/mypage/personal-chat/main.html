@@ -1,0 +1,41 @@
+<div>
+	<v-row>
+		<v-col cols="3" style="text-align:center;">
+		</v-col>
+		<template v-if="noticeList.length > 0">
+			<v-col cols="9">
+				<template v-if="noticeBoxFlag">
+				  <el-alert
+				    title="공지사항"
+				    type="warning"
+				    :description="noticeContent"
+				    @close="closeNotice()">
+				  </el-alert>
+				</template>
+			  <template v-else>
+	  			<el-button type="warning" icon="el-icon-bell" circle  @click="openNotice()"></el-button>
+  				<el-button type="danger" icon="el-icon-delete" circle @click="removeNotice(noticeList[0])"></el-button>
+			  </template>
+			</v-col>
+		</template>
+	</v-row>
+	
+	<template>
+		<vue-advanced-chat 
+			height="100vh" 
+			show-add-room="false"
+			:current-user-id="currentUserId" 
+			:messages-loaded="messagesLoaded"
+			:room-id="roomId"
+			:rooms-loaded="roomsLoaded"
+			:menu-actions="menuActions"
+			@menu-action-handler="menuActionHandler"
+			@fetch-messages="fetchMessages"
+			@send-message="sendMessage"
+		    @edit-message="editMessage"
+		    @notice-message="noticeMessage"
+		    @delete-message="deleteMessage"
+            @open-file="openFile" />
+	</template>
+	
+</div>			

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.PaymentVirtualAccountMapper">
+
+    <update
+        id="updatePaymentVirtualAccount"
+        parameterType="java.util.Map">
+        UPDATE `tb_payment_virtual_account` `payment_virtual_account`
+        <set>
+            <if test="paymentVirtualAccountDto.depositYn != null and paymentVirtualAccountDto.depositYn != ''">
+                `payment_virtual_account`.`deposit_yn` = #{paymentVirtualAccountDto.depositYn},
+            </if>
+            <if test="paymentVirtualAccountDto.expiredYn != null and paymentVirtualAccountDto.expiredYn != ''">
+                `payment_virtual_account`.`expired_yn` = #{paymentVirtualAccountDto.expiredYn},
+            </if>
+        </set>
+        WHERE
+            `payment_virtual_account`.`id` = #{id}
+    </update>
+
+    <update
+        id="updatePaymentVirtualAccountByHistoryId"
+        parameterType="java.util.Map">
+        UPDATE `tb_payment_virtual_account` `payment_virtual_account`
+        <set>
+            <if test="paymentVirtualAccountDto.depositYn != null and paymentVirtualAccountDto.depositYn != ''">
+                `payment_virtual_account`.`deposit_yn` = #{paymentVirtualAccountDto.depositYn},
+            </if>
+            <if test="paymentVirtualAccountDto.expiredYn != null and paymentVirtualAccountDto.expiredYn != ''">
+                `payment_virtual_account`.`expired_yn` = #{paymentVirtualAccountDto.expiredYn},
+            </if>
+        </set>
+        WHERE
+            `payment_virtual_account`.`payment_history_id` = #{paymentVirtualAccountDto.paymentHistoryId}
+    </update>
+
+</mapper>
