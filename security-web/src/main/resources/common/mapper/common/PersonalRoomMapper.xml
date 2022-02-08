@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.PersonalRoomMapper">
+
+    <sql id="selectFrom">
+		SELECT
+		   `personal_room`.`id`,
+		   `personal_room`.`created_user`,
+		   (SELECT `user`.`name` FROM `tb_user` `user` WHERE `user`.`id` = `personal_room`.`created_user`) AS `created_nm`,
+		   (SELECT `profile`.`save_file_nm` FROM `tb_user_profile` `profile` WHERE `profile`.`id` = (SELECT `user`.`profile_id` FROM `tb_user` `user` WHERE `user`.`id` = `personal_room`.`created_user`)) AS `created_profile`,
+		   `personal_room`.`invited_user`,
+		   (SELECT `user`.`name` FROM `tb_user` `user` WHERE `user`.`id` = `personal_room`.`invited_user`) AS `invited_nm`,
+		   (SELECT `profile`.`save_file_nm` FROM `tb_user_profile` `profile` WHERE `profile`.`id` = (SELECT `user`.`profile_id` FROM `tb_user` `user` WHERE `user`.`id` = `personal_room`.`invited_user`)) AS `invited_profile`,
+		   `personal_room`.`created_out_yn`,
+		   `personal_room`.`invited_out_yn`,
+		   `personal_room`.`created_enter_date`,
+		   `personal_room`.`invited_enter_date`,
+		   `personal_room`.`created_date`
+		FROM
+			`tb_personal_room` `personal_room`
+    </sql>
+
+    <sql id="where">
+        <where>
+        	<if test="personalRoomParamDto.createdUser != null and personalRoomParamDto.createdUser != ''">
+            	AND
+            		`personal_room`.`created_user` = #{personalRoomParamDto.createdUser}
+            </if>
+        	<if test="personalRoomParamDto.invitedUser != null and personalRoomParamDto.invitedUser != ''">
+            	AND
+            		`personal_room`.`invited_user` = #{personalRoomParamDto.invitedUser}
+            </if>
+        	<if test="personalRoomParamDto.createdOutYn != null and personalRoomParamDto.createdOutYn != ''">
+            	AND
+            		`personal_room`.`created_out_yn` = #{personalRoomParamDto.createdOutYn}
+            </if>
+        	<if test="personalRoomParamDto.invitedOutYn != null and personalRoomParamDto.invitedOutYn != ''">
+            	AND
+            		`personal_room`.`invited_out_yn` = #{personalRoomParamDto.invitedOutYn}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="personalRoomResultMap" type="kr.supporti.api.common.entity.PersonalRoomEntity">
+        <result property="id" column="id"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="createdNm" column="created_nm"/>
+        <result property="createdProfile" column="created_profile"/>
+        <result property="invitedUser" column="invited_user"/>
+        <result property="invitedNm" column="invited_nm"/>
+        <result property="invitedProfile" column="invited_profile"/>
+        <result property="createdOutYn" column="created_out_yn"/>
+        <result property="invitedOutYn" column="invited_out_yn"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectPersonalRoomList"
+        parameterType="java.util.Map"
+        resultMap="personalRoomResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectPersonalRoomListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectPersonalRoom"
+        parameterType="java.util.Map"
+        resultMap="personalRoomResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `personal_room`.`id` = #{id}
+    </select>
+
+    <update
+        id="updatePersonalRoom"
+        parameterType="java.util.Map"
+    >
+    	UPDATE 
+    		`tb_personal_room`
+    	SET
+        <if test="personalRoomParamDto.createdOutYn != null and personalRoomParamDto.createdOutYn != ''">
+        	`created_out_yn` = #{personalRoomParamDto.createdOutYn},
+        	`created_enter_date` = now()
+        </if>
+        <if test="personalRoomParamDto.createdOutYn != null and personalRoomParamDto.createdOutYn != '' and personalRoomParamDto.invitedOutYn != null and personalRoomParamDto.invitedOutYn != ''">
+        	,
+        </if>
+       	<if test="personalRoomParamDto.invitedOutYn != null and personalRoomParamDto.invitedOutYn != ''">
+        	`invited_out_yn` = #{personalRoomParamDto.invitedOutYn},
+        	`invited_enter_date` = now()
+        </if>
+        WHERE
+        	`id` = #{personalRoomParamDto.id}	
+    </update>
+</mapper>

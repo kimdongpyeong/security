@@ -1,0 +1,175 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>메뉴 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row dense>
+        <v-col cols="12" sm="6">
+            <v-card>
+                <v-card-title>메뉴 목록</v-card-title>
+                <v-card-text>
+                    <div style="max-height: 500px; overflow-y: auto;">
+                        <v-treeview
+                            dense
+                            activatable
+                            return-object
+                            :items="treeview.menuList.items"
+                            :open.sync="treeview.menuList.open"
+                            :active.sync="treeview.menuList.active"
+                        >
+                            <template v-slot:prepend="{ item, open }">
+                                <template v-if="item.childrenCount > 0">
+                                    <template v-if="open">
+                                        <v-icon>mdi-folder-open</v-icon>
+                                    </template>
+                                    <template v-else>
+                                        <v-icon>mdi-folder</v-icon>
+                                    </template>
+                                </template>
+                                <template v-else>
+                                    <v-icon>mdi-file</v-icon>
+                                </template>
+                            </template>
+                            <template v-slot:label="{ item }">
+                                <div style="cursor: pointer;">{{ item.name + ' (순위 : ' + item.ranking + ')' }}</div>
+                            </template>
+                        </v-treeview>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col cols="12" sm="6">
+            <v-card>
+                <v-card-title>메뉴 상세</v-card-title>
+                <v-card-text>
+                    <v-form>
+                        <v-row dense>
+                            <v-col cols="12">
+                                <v-text-field
+                                    dense
+                                    outlined
+                                    clearable
+                                    label="이름"
+                                    hide-details="auto"
+                                    v-model="data.menu.name"
+                                    :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-autocomplete
+                                    dense
+                                    outlined
+                                    clearable
+                                    hide-no-data
+                                    label="부모 이름"
+                                    hide-details="auto"
+                                    item-text="namePath"
+                                    item-value="id"
+                                    :items="autocomplete.parentId.items"
+                                    v-model="data.menu.parentId"
+                                ></v-autocomplete>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-textarea
+                                    dense
+                                    outlined
+                                    clearable
+                                    label="설명"
+                                    hide-details="auto"
+                                    v-model="data.menu.description"
+                                ></v-textarea>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    dense
+                                    outlined
+                                    clearable
+                                    label="경로"
+                                    hide-details="auto"
+                                    v-model="data.menu.path"
+                                    :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    dense
+                                    outlined
+                                    clearable
+                                    label="순위"
+                                    type="number"
+                                    hide-details="auto"
+                                    v-model="data.menu.ranking"
+                                    :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-select
+                                    dense
+                                    outlined
+                                    label="메뉴 노출 여부"
+                                    hide-details="auto"
+                                    :items="[{'text': '선택', 'value': null},{'text': '예', 'value': 'T'},{'text': '아니오', 'value': 'F'}]"
+                                    v-model="data.menu.show"
+                                    :rules="[rules.required]"
+                                ></v-select>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-select
+                                    dense
+                                    outlined
+                                    label="관리화면 메뉴 노출 여부"
+                                    hide-details="auto"
+                                    :items="[{'text': '선택', 'value': null},{'text': '예', 'value': 'T'},{'text': '아니오', 'value': 'F'}]"
+                                    v-model="data.menu.sideShow"
+                                    :rules="[rules.required]"
+                                ></v-select>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-select
+                                    dense
+                                    outlined
+                                    label="비회원 공개 여부"
+                                    hide-details="auto"
+                                    :items="[{'text': '선택', 'value': null},{'text': '예', 'value': 'T'},{'text': '아니오', 'value': 'F'}]"
+                                    v-model="data.menu.publicyStatus"
+                                    :rules="[rules.required]"
+                                ></v-select>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    dense
+                                    outlined
+                                    clearable
+                                    label="아이콘"
+                                    hide-details="auto"
+                                    :append-outer-icon="data.menu.icon"
+                                    v-model="data.menu.icon"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row dense>
+                            <v-col cols="12" class="text-right">
+                                <v-btn
+                                    color="secondary"
+                                    @click="treeview.menuList.active = [];"
+                                >신규</v-btn>
+                                <v-btn
+                                    color="primary"
+                                    :loading="btn.saveMenu.loading"
+                                    @click="saveMenu();"
+                                >저장</v-btn>
+                                <v-btn
+                                    v-if="!!data.menu.id"
+                                    color="error"
+                                    :loading="btn.removeMenu.loading"
+                                    @click="removeMenu();"
+                                >삭제</v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </v-col>
+    </v-row>
+</div>

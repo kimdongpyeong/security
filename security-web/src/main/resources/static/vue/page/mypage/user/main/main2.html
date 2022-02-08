@@ -1,0 +1,127 @@
+<div class="zclassWrap zclassMain" style="padding-top:130px;">
+	<div class="newMypageWrap mentorWrap" style="padding-top:0px; padding-bottom:130px;">
+		<h2>안녕하세요, <span class="type">사용자 </span> <span class="name">{{ data.user.name }}</span>님!</h2>
+		<div class="colGroup mypageGroup">
+			<div class="leftGroup">
+				<div class="infoBox">
+					<div class="profileBg">
+						<img class="profileImg" style="height: 105px; width: 105px; border-radius: 105px;" :src="data.user.profileSrc" alt="프로필 이미지" />
+					</div>
+					<div>
+						<h3>소개</h3>
+						<p>{{ data.user.introduceContent }}</p>
+					</div>
+					<div>
+						<h3>개인정보</h3>
+						<p>이메일: {{ data.user.username }}</p>
+	                    <p>성별: {{ data.user.gender }}</p>
+	                    <p>나이: {{ data.user.age }}</p>
+						<!-- <p>{{ data.user.phoneNum }}</p> -->
+					</div>
+					<div>
+						<a href="/mypage/users/info">수정하기</a>
+					</div>
+				</div>
+				<button class="logout" @click="logout();">로그아웃</button>
+			</div>
+			<div class="rightGroup">
+				<div>
+					<div class="colGroup titleGroup">
+						<h3>시청중인 강의실</h3>
+					</div>
+					<div class="colGroup classListGroup contents">
+					   <template v-if="classRoomList.length > 0">
+							<template v-for="item in classRoomList">
+								<div class="classCard">
+                                    <a>
+                                    <div @click="goClassPage(item.classroomId)"> 
+                                        <div class="imgBox">
+                                            <v-img 
+                                              :src="'/api/app/images?subpath=classRoomProfile&filename=' + item.saveFileNm" 
+                                              alt="" 
+                                              style="cursor: pointer;" 
+                                              />
+                                        </div>
+                                        <div class="txtBox colGroup">
+                                            <div class="txts">
+                                                <h4>{{item.title}}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </a>
+                                    <el-button class="modifyBtn fixClassBtn" type="text" @click="removeClassRoom(item.classroomId); data.title = item.title;">삭제</el-button>
+                                </div>
+                            </template>
+                        </template>
+                        <template v-else>
+                            <div class="colGroup noncontents" >
+                                <p>아직 시청중인 강의실이 없어요.<br />
+                                </p>
+                            </div>
+<!-- 						</template> -->
+                    </div>
+                </div>
+                <div>
+                    <div class="colGroup titleGroup">
+                        <h3>1:1 채팅 목록</h3>
+                    </div>
+                    <div class="colGroup classListGroup contents">
+                        <template v-if="totalRoomList.length > 0">
+                            <template  v-for="(item, i) in totalRoomList">
+                                <div class="classCard">
+                                    <a>
+                                        <template v-if="item.invitedUser === data.user.id">
+                                            <div @click="goPersonalChat(i)"> 
+                                                <div class="imgBox">
+                                                    <img :src="'/api/app/images?subpath=profile&filename=' + item.createdProfile" alt="" style="cursor: pointer;" />
+                                                </div>
+                                                <div class="txtBox colGroup">
+                                                    <div class="txts">
+                                                        <h4>{{item.createdNm}}</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div @click="goPersonalChat(i)"> 
+                                                <div class="imgBox">
+                                                    <img :src="'/api/app/images?subpath=profile&filename=' + item.invitedProfile" alt="" style="cursor: pointer;" />
+                                                </div>
+                                                <div class="txtBox colGroup">
+                                                    <div class="txts">
+                                                        <h4>{{item.invitedNm}}</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </a>
+                                </div>
+                            </template>
+                        </template>
+                        <template v-else>
+                            <div class="colGroup noncontents" >
+                                <p>아직 1:1채팅방이 없어요.<br/></p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+	
+    <!-- 프로필 삭제/업로드 -->
+    <div class="profile">
+        <el-dialog
+            title=""
+            :visible.sync="visible.thumbnailVisible"
+            class="signUpWrap profileVisibleWrap"
+        >
+            <div class="contents">
+                <ul class="typeBox">
+                    <li @click="$refs.thumbnail.click(); visible.thumbnailVisible = false">사진 선택하기</li>
+                    <li @click="removeImg();">사진 삭제하기</li>
+                </ul>
+            </div>
+        </el-dialog>
+    </div>
+</div>

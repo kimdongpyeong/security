@@ -1,0 +1,54 @@
+<div style="max-width: 1200px; margin: 15px auto; padding: 50px 15px;">
+    <template>
+        <div style="height: 50px; width: 50px; display: inline-block;"><img :src="data.user.profileSrc" alt=""></div>
+        <strong>{{ data.user.name }}님</strong> 의 강의 목록
+    </template>
+    <div style="margin: 20px auto; padding: 20px;">
+        <el-row style="font-size: 30px;">
+            <p>진행중인 강의</p>
+        </el-row>
+        <el-row>
+            <template v-for="item in data.classroomList">
+                <template v-if="item.ongoing == 'N'">
+                    <el-col :span="6"  style="padding: 20px;">
+                        <div  @click="goClassPage(item.id)">
+                            <el-card :body-style="{ padding: '10px' }">
+                                <img :src="item.thumbnailSrc" alt="" style="cursor: pointer;" >
+                                <div style="padding: 14px;">
+                                    <span>{{ item.title }}</span>
+                                    <div>
+                                        <time class="time">{{ item.createdDate }}</time>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </div>
+                    </el-col>
+            </template>
+            </template>
+        </el-row>
+    </div>
+    <div style="margin: 20px auto; padding: 20px;">
+        <el-row style="font-size: 30px;">
+            <p>종료된 강의</p>
+        </el-row>
+        <el-row>
+            <template v-for="item in data.classroomList">
+                <template v-if="item.ongoing == 'Y'">
+                    <el-col :span="6"  style="padding: 20px;">
+                        <div  @click="goClassPage(item.id)">
+                            <el-card :body-style="{ padding: '10px' }">
+                                <img :src="item.thumbnailSrc" alt="" style="cursor: pointer;" >
+                                <div style="padding: 14px;">
+                                    <span>{{ item.title }}</span>
+                                    <div>
+                                        <time class="time">{{ item.createdDate }}</time>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </div>
+                    </el-col>
+                </template>
+            </template>
+        </el-row>
+    </div>
+</div>

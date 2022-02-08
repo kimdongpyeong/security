@@ -1,0 +1,150 @@
+<div>
+    <header id="header">
+        <div class="container_z col-group">
+            <div class="pc">
+                <div class="col-group">
+                    <div class="col-group">
+                        <h1 class="logo">
+                            <a :href="store.state.app.user != null && store.state.app.user.roleId != 3? '/dashboard' : '/main'"><img src="/resources/img/logo.png" alt="로고"></a>
+                        </h1>
+                        <nav class="col-group gnb-group">
+                            <a href="./pages/service.html">서비스</a>
+                            <a href="./pages/teacher.html">강사</a>
+                        </nav>
+                    </div>
+                    <template v-if="!name">
+                        <nav class="col-group register-group">
+                            <button type="button" class="login-btn" @click="visible.loginVisible = true">로그인</button>
+                            <button type="button" class="main-btn" @click="visible.loginVisible = true">무료로 시작하기</button>
+                        </nav>
+                    </template>
+                    <template v-else>
+                        <nav class="col-group register-group">
+                            <template v-if="$store.state.app.user.roleId != 3">
+                                <a v-if="$store.state.app.roleList[0].id == 1" href="/settings">관리자페이지</a>
+                                <template v-if="$route.path.startsWith('/dashboard')">
+                                    <a @click="goClassroom">강의실 이동</a>
+                                    <a class="main-btn" @click="goMypage">마이페이지</a>
+                                </template>
+                                <template v-else-if="$route.path.startsWith('/mypage')">
+                                    <a @click="goDashboard">대시보드 이동</a>
+                                    <a @click="goClassroom" class="main-btn">강의실 이동</a>
+                                </template>
+                                <template v-else-if="$route.path.startsWith('/classroom')">
+                                    <a href="/dashboard">대시보드 이동</a>
+                                    <a class="main-btn" @click="goMypage">마이페이지</a>
+                                </template>
+                                <template v-else>
+                                    <a class="main-btn" @click="goDashboard">대시보드 이동</a>
+                                    <a @click="goClassroom">강의실 이동</a>
+                                    <a class="main-btn" @click="goMypage">마이페이지</a>
+                                </template>
+                                <a @click="logout">로그아웃</a>
+                            </template>
+                            <template v-else>
+                                <a class="main-btn" @click="goMypage">마이페이지</a>
+                                <a @click="logout">로그아웃</a>
+                            </template>
+                        </nav>
+                    </template>
+                </div>
+            </div>
+            <div class="mobile">
+                <div class="col-group">
+                    <h1 class="logo">
+                        <a href="/main"><img src="/resources/img/logo.png" alt="로고"></a>
+                    </h1>
+                    <button class="menu" @click="visible.menuVisible = !visible.menuVisible">
+                        <img src="/resources/img/icon/icon_menu.svg" alt="">
+                    </button>
+                </div>
+                <div class="side-menu-group" v-show="visible.menuVisible">
+                    <div class="side-menu-header"><img src="/resources/img/icon/icon_close.svg" alt="" @click="visible.menuVisible = false"></div>
+                    <div class="side-menu-body">
+                        <a href="">서비스</a>
+                        <a href="">강사</a>
+                        <a href="">크리에이터</a>
+                        <template v-if="!name">
+                            <button class="login-btn" @click="visible.loginVisible = true">로그인</button>
+                            <button class="main-btn" @click="visible.loginVisible = true">무료로 시작하기</button>
+                        </template>
+                        <template v-else>
+                            <a v-if="$store.state.app.roleList[0].id == 1" href="/settings">관리자페이지</a>
+                            <a @click="goMypage">마이페이지</a>
+                            <a @click="logout">로그아웃</a>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main id="main" class="main-wrap">
+        <router-view></router-view>
+    </main>
+    <footer id="zplayFooter">
+        <div style="height: 168px; background: #9FA4D4; width: 100%;">
+            <div class="container_z">
+                <div class="zplayFbottom">
+                    <div class="wrap">
+                        <div class="infoWrap" style="margin-top: 34px;">
+                            <div style="display: inline-block; ; height: 100%;">
+                                <img src="/resources/img/Vector.png" style="width: 120px; height: 73px; margin-right: 15px; margin-top: 9px;">
+                            </div>
+                            <div style="display: inline-block; height: 100%; margin-top: 12px; vertical-align: top;" class="temp">
+                                <ul>
+                                    <li class="first" style="font-weight: bold;">주식회사 린온컴퍼니</li>
+                                    <li class="last">대표 김영진</li>
+                                </ul>
+                                <ul>
+                                    <li class="first">서울시 중구 서소문로 89 순화빌딩, 17층</li>
+                                    <li class="last">사업자 등록번호 563 87 01952</li>
+                                </ul>
+                                <ul>
+                                    <li>Copyright ⓒ leanoncompany co.,ltd All right reserved.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <ul class="socialIcons">
+                                <li>
+                                    <a target="_blank" href="https://www.instagram.com/zplayofficial_/">
+                                        <img src="/resources/img/Instagram.svg" alt="instagram" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a target="_blank" href="https://www.facebook.com/Z-Play-111060728010880">
+                                        <img src="/resources/img/Facebook.svg" alt="facebook" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a target="_blank" href="https://youtube.com/channel/UC9KbckmpYVWW5mh9rqlK8gw">
+                                        <img src="/resources/img/youtube.svg" alt="youtube" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a target="_blank" href="http://pf.kakao.com/_vCCrs/chat">
+                                        <img src="/resources/img/kakaotalk.svg" alt="kakao" />
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <el-dialog
+        title="로그인"
+        :visible.sync="visible.loginVisible"
+        class="pop-wrap login-pop-wrap"
+        @open="googleSetting"
+        width="40%"
+        center>
+        <div class="img-box"><img src="/resources/img/icon/icon-lock.svg" alt=""></div>
+        <div class="btn-group sns-btn-group">
+            <button class="kakao-btn" @click="kakaoLogin">카카오로 시작하기</button>
+            <button class="google-btn" @click="googleLogin">Google로 시작하기</button>
+        </div>
+    </el-dialog>
+</div>

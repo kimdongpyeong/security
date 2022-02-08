@@ -1,0 +1,314 @@
+<div style="width: 100%; height: 650px; display: flex; margin-bottom: 40px; margin-top: 10px;">
+    <div style="overflow: auto; width: 30%; float: left; border: 1px solid #003458; margin-left:10px; margin-right:10px; padding-left: 20px; padding-top: 20px; border-radius: 10px;">
+        <div>
+	        <span style="font-size: 27px; font-weight: bolder;">{{ data.stduentInfo.name }}님</span>
+	        <span style="font-size: 25px;">&nbsp;의 프로필</span>
+        </div>
+        <div style="margin-top: 30px; width: 100%;">
+	        <div style="width: 100%;">
+		        <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> Phone : </span>
+		        <span v-if="data.profileModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.phoneNum }}</span>
+		        <input v-if="data.profileModify == 'Y'" style="font-size: 13px;" v-model=" data.stduentInfo.phoneNum"></input>
+	        </div>
+	        <div style="width: 100%;">
+		        <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> E-mail : </span>
+	            <span v-if="data.profileModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.email }} </span>
+	            <input v-if="data.profileModify == 'Y'" style="font-size: 13px;" v-model=" data.stduentInfo.email "></input>
+	        </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> 성별 : </span>
+                <span v-if="data.profileModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.gender }} </span>
+                <select v-if="data.profileModify == 'Y'" name="gender" id="gender" v-model="data.stduentInfo.gender">
+                    <option value="M">남</option>
+                    <option value="W">여</option>
+                </select>
+            </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> 나이 : </span>
+                <span v-if="data.profileModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.studentCode }} </span>
+                <select v-if="data.profileModify == 'Y'" name="educationCd" id="educationCd" v-model="data.stduentInfo.educationCd">
+                    <template v-for="item in data.student.education">
+                        <option :value="item.value">{{item.name}}</option>
+                    </template>
+                </select>
+            </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> 수강 형태 : </span>
+                <span v-if="data.profileModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.lectureType }} </span>
+                <select v-if="data.profileModify == 'Y'" name="lectureType" id="lectureType" v-model="data.stduentInfo.lectureType">
+                    <option value="O">온라인</option>
+                    <option value="F">오프라인</option>
+                </select>
+            </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 30px; color:rgb(160,160,160)"> 수강 내역 : </span>
+                <span v-if="data.profileModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.lectureName }} </span>
+                <select v-if="data.profileModify == 'Y'" name="lectureName" id="lectureName" v-model="data.stduentInfo.lectureName">
+                    <template v-for="item in data.student.classRoom">
+                        <option :value="item.title">{{item.title}}</option>
+                    </template>
+                </select>
+            </div>
+            <div style="width: 100%;">
+                <span @click="data.profileModify = 'Y'" style="float: right; font-size: 13px;" v-if="data.profileModify == 'N'">수정하기</span>
+                <span @click="studentProfileModify()" style="float: right; font-size: 13px;" v-if="data.profileModify == 'Y'">확인</span>
+            </div>
+        </div>
+        
+        <div>
+            <span style="font-size: 25px; font-weight: bolder;">일정 관리</span>
+        </div>
+        <div style="margin-top: 20px; width: 100%;">
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> 시작일 : </span>
+                <span v-if="data.scheduleModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.startDate }} </span>
+                <el-date-picker
+                    v-if="data.scheduleModify == 'Y'"
+                    v-model="data.stduentInfo.startDate"
+                    type="date"
+                    placeholder="시작일"
+                    value-format="yyyy-MM-dd"
+                ></el-date-picker>
+            </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> 종료일 : </span>
+                <span v-if="data.scheduleModify == 'N'" style="font-size: 13px;"> {{ data.stduentInfo.endDate }} </span>
+                <el-date-picker
+                    v-if="data.scheduleModify == 'Y'"
+                    v-model="data.stduentInfo.endDate"
+                    type="date"
+                    placeholder="시작일"
+                    value-format="yyyy-MM-dd"
+                ></el-date-picker>
+            </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 5px; color:rgb(160,160,160)"> 요일 : </span>
+                <template v-if="data.scheduleModify == 'N'" v-for="item in data.week" style="display: inline !important;">
+                    <div style="display: inline !important;">{{item.day}} </div>
+                </template>
+                <template v-if="data.scheduleModify == 'Y'" v-for="item in data.week" style="display: inline !important;">
+	                <select name="day" id="day" v-model="data.stduentInfo.dayNum">
+	                    <option value="2">월</option>
+	                    <option value="3">화</option>
+	                    <option value="4">수</option>
+	                    <option value="5">목</option>
+	                    <option value="6">금</option>
+	                    <option value="7">토</option>
+	                    <option value="1">일</option>
+	                </select>
+                </template>
+            </div>
+            <div style="width: 100%;">
+                <span style="width: 20%; font-size: 13px; margin-bottom: 10px; color:rgb(160,160,160)"> 진행 회차 : </span>
+                <span style="font-size: 13px;"> {{ data.stduentInfo.lectureNum }} &nbsp;</span>
+	            <progress value="20" max="100"></progress>
+            </div>
+            <div style="width: 100%;">
+                <span @click="data.scheduleModify = 'Y'" style="float: right; font-size: 13px;" v-if="data.scheduleModify == 'N'">수정하기</span>
+                <span @click="studentScheduleModify()" style="float: right; font-size: 13px;" v-if="data.scheduleModify == 'Y'">확인</span>
+            </div>
+        </div>
+		<div style="display:flex; float:center; height:50px;">
+	        <v-date-picker 
+	          light
+	          no-title
+                                              />
+		</div>
+    </div>
+    <div style="width: 70%; height: 100%;">
+	    <div style="width: 95%; height:31%; box-sizing: border-box; border: 1px solid #003458; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; padding-top:10px; padding-left:15px; padding-right: 10px; border-radius: 10px;">
+	        <div style="margin-bottom: 15px;">
+	            <span span style="font-size: 25px; font-weight: bolder;">성적 입력</span>
+	            <button style="float: right; border-radius: 5px;" @click="gradeSave()">저장</button>
+	        </div>
+	        <div style="width: 100%; margin-bottom: 10px; display: flex;">
+	           <div style="width: 30%;">
+		            <span>분류&nbsp;</span>
+                    <select name="classCode" id="classCode" v-model="data.grade.classInput">
+                        <option value="">-</option>
+                        <template v-for="item in data.classCode">
+                            <option :value="item.value">{{item.name}}</option>
+                        </template>
+                    </select>
+	            </div>
+	            <div>
+		            <span>과목&nbsp;</span>
+                    <select name="subjectCode" id="subjectCode" v-model="data.grade.subjectInput">
+                        <option value="">-</option>
+                        <template v-for="item in data.subjectCode">
+                            <option :value="item.value">{{item.name}}</option>
+                        </template>
+                    </select>
+	            </div>
+	         </div>
+             <div style="width: 100%; margin-bottom: 10px; display: flex;">
+                <div style="width: 30%;">
+	                <span>날짜&nbsp;</span>
+	                <el-date-picker
+	                  v-model="data.grade.date"
+	                  type="date"
+	                  placeholder=""
+	                  value-format="yyyy-MM-dd"
+	                ></el-date-picker>
+                </div>
+                <div>
+	                <span>성적&nbsp;</span>
+	                <input id="score" type="text" v-model="data.grade.score"></input>
+                </div>
+             </div>
+             <div>
+                 <span>특이사항&nbsp;</span>
+                 <input id="specificity" type="text" v-model="data.grade.specificity" style="width: 55%;"></input>
+             </div>
+	    </div>
+	    <div style="overflow: auto; width: 95%; height:25%; box-sizing: border-box; border: 1px solid #003458; margin-left: 10px; margin-right: 10px; margin-top: 20px; margin-bottom: 20px; padding-top:10px; padding-left:15px; border-radius: 10px;">
+	        <div>
+	            <div style="width: 100%; margin-bottom: 10px; display: flex;">
+	                <span style="width: 30%; font-size: 25px; font-weight: bolder;">성적 현황</span>
+	                <div style="width: 15%; ">
+	                    <span>분류&nbsp;</span>
+	                    <select name="classCode" id="classCode" v-model="data.grade.getClass">
+	                        <option value="">-</option>
+	                        <template v-for="item in data.classCode">
+	                            <option :value="item.value">{{item.name}}</option>
+	                        </template>
+	                    </select>
+	                </div>
+	                <div>
+	                    <span>과목&nbsp;</span>
+	                    <select name="subjectCode" id="subjectCode" v-model="data.grade.getSubject">
+	                        <option value="">-</option>
+	                        <template v-for="item in data.subjectCode">
+	                            <option :value="item.value">{{item.name}}</option>
+	                        </template>
+	                    </select>
+	                </div>
+	            </div>
+	            <div>
+			        <v-simple-table>
+			            <template v-slot:default>
+			                <thead>
+			                    <tr>
+			                        <th class="text-left">날짜</th>
+			                        <th class="text-left">점수</th>
+			                        <th class="text-left" style="width: 400px;">특이사항</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+			                    <tr v-for="gradeList in data.grade.gradeList" :key="gradeList.id">
+			                        <td> {{ gradeList.gradeInputDate }} </td>
+			                        <td> {{ gradeList.score }} 점 </td>
+			                        <td> {{ gradeList.specificity }} </td>
+			                    </tr>
+			                </tbody>
+			            </template>
+			        </v-simple-table>
+	            </div>
+	            
+	        </div>
+	    </div>
+        <div style="overflow: auto; width: 95%; height:38%; box-sizing: border-box; border: 1px solid #003458; margin-left: 10px; margin-right: 10px; margin-top: 20px; padding-left:15px; padding-top:10px; border-radius: 10px;">
+	        <div>
+	            <span span style="font-size: 25px; font-weight: bolder;">관련 파일</span>
+	        </div>
+	        
+	        
+	        
+	        
+			<template v-for="(item, idx) in data.dataList">
+			    <div style="margin-top: 5px; margin-right:10px; border: 2px solid #e7e7e7; border-radius: 12px;">
+			        <div>
+			            <div>
+			                <el-input 
+			                    style="width: 50%; margin: 5px;" 
+			                    placeholder="title" v-model="item.title" 
+			                />
+			            </div>
+			            <div>
+			                <el-input 
+			                    style="width: 50%; margin: 5px;" 
+			                    placeholder="desc" v-model="item.desc" 
+			                />
+			            </div>
+				        <template v-for="(item2, idx2) in item.files">
+				            <div>
+				                <template v-if="item2.id == null && item2.id == undefined">
+				                    <div>
+				                        <input type="file" v-model="item2.file" dense
+				                            :id="'inputFile' + idx + idx2"
+				                        />
+				                        <label @click="$refs.inputFile.click();" />
+				                    </div>
+				                </template>
+				                <template v-else>
+				                    <div style="display:flex; width:100%;">
+		                                <div>
+		                                    <v-btn x-large icon style="color: red; height: auto;"
+		                                        @click="deleteDataFileList(item2.id, idx, idx2)">
+		                                        <v-icon>mdi-minus-circle-outline</v-icon>
+		                                    </v-btn>
+		                                </div>
+				                        <p>{{ item2.originFileNm }}</p>
+				                    </div>
+				                    <div>
+				                        <input type="file" v-model="item2.file" dense
+				                            :label="item2.originFileNm" :id="'inputFile' + idx + idx2"
+				                        ></input>
+				                        <label @click="$refs.inputFile.click();" />
+				                    </div>
+				                </template>
+				            </div>
+				        </template>
+			        </div>
+			        <div>
+			            <div>
+	                        <v-btn x-large icon style="color: red; height: auto; margin-left: 5px; float: right;"
+	                          @click="deleteDataList(item.id, idx)">
+	                            <v-icon>mdi-minus-circle-outline</v-icon>
+	                        </v-btn>
+			            </div>
+			        </div>
+			    </div>
+			</template>
+            <div>
+                <div>
+                    <v-btn x-large icon style="color: blue; height: auto; margin-left: 5px; float: right;"
+                      @click="addDataList()">
+                        <v-icon>mdi-plus-circle-outline</v-icon>
+                    </v-btn>
+                </div>
+            </div>
+		    <btn outlined style="float: right;" @click="save()">완료</btn>
+			<div>
+			    <template>
+			        <v-simple-table>
+			            <template v-slot:default>
+			                <thead>
+			                    <tr>
+			                        <th class="text-left" style="width: 200px;">파일 제목</th>
+			                        <th class="text-left">파일 유형</th>
+			                        <th class="text-left">용량</th>
+			                        <th class="text-left">업로드 날짜</th>
+			                        <th class="text-left">상태</th>
+			                        <th class="text-left">다운로드</th>
+			                    </tr>
+			                </thead>
+			                <tbody v-for="item in data.dataList">
+			                    <tr v-for="file in item.files" :key="item.id">
+			                        <td> {{ file.originFileNm }} </td>
+			                        <td> {{ file.fileExtension }} </td>
+			                        <td> {{ file.fileSize }} </td>
+			                        <td> {{ file.createdDate }} </td>
+			                        <td> 업로드 완료 </td>
+			                        <td>
+			                            <v-icon @click="fileDownload(file, file.fileExtension)"> mdi-download </v-icon>
+			                        </td>
+			                    </tr>
+			                </tbody>
+			            </template>
+			        </v-simple-table>
+			    </template>
+			</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.LecturerDataMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `lecturer_data`.`id`,
+            `lecturer_data`.`lecturer_id`,
+            `lecturer_data`.`title`,
+            `lecturer_data`.`subtitle`,
+            `lecturer_data`.`created_date`
+        FROM
+            `tb_lecturer_data` `lecturer_data`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="lecturerDataDto.lecturerId != null and lecturerDataDto.lecturerId != ''">
+                AND `lecturer_data`.`lecturer_id` = #{lecturerDataDto.lecturerId}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="lecturerDataResultMap" type="kr.supporti.api.common.entity.LecturerDataEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerId" column="lecturer_id"/>
+        <result property="title" column="title"/>
+        <result property="subtitle" column="subtitle"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectLecturerDataList"
+        parameterType="java.util.Map"
+        resultMap="lecturerDataResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectLecturerDataListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectLecturerData"
+        parameterType="java.util.Map"
+        resultMap="lecturerDataResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `lecturer_data`.`id` = #{id}
+    </select>
+
+    <update
+        id="modifyLecturerData"
+        parameterType ="java.util.Map"
+    >
+        UPDATE 
+            `tb_lecturer_data` `lecturer_data`
+        SET
+	            `lecturer_data`.`title` = #{lecturerDataEntity.title},
+                `lecturer_data`.`subtitle` = #{lecturerDataEntity.title}
+        WHERE
+            `lecturer_data`.`id` = #{lecturerDataEntity.id}
+    </update>
+
+</mapper>

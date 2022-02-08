@@ -1,0 +1,26 @@
+<template>
+    <v-img
+        :contain="contain"
+        :width="width"
+        :height="height"
+        :max-width="maxWidth"
+        :max-height="maxHeight"
+        :style="customStyle"
+        :class="customClass"
+        :src="srcData"
+        @error="srcData='/src/assets/images/default.png'"
+        @load="load">
+        <v-overlay v-if="isLoadingComplete != null && isLoadingComplete === false" :absolute="true" :value="true">
+            <v-progress-circular
+            indeterminate
+            size="128"
+            ></v-progress-circular>
+        </v-overlay>
+        <v-overlay v-if="isLoadingComplete === true && overlayShow === true" :absolute="true" :value="true">
+            <template
+                v-for="(item, index) in overlayContent">
+                <h1 class="d-flex justify-center align-center" :key="index" v-if="item.show">{{item.text}}</h1>
+            </template>
+        </v-overlay>
+    </v-img>
+</template>

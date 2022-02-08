@@ -1,0 +1,40 @@
+<div class="liveStreamingApplyWrap">
+    <div class="container_z">
+        <h3 style="padding-bottom:15px;">보고싶은 뉴스의 키워드를 입력해주세요.</h3>
+        <v-row>
+        	<v-col cols="4">
+				<v-text-field
+				  label="키워드입력"
+				  v-model="keyword"
+				  @keydown.enter="search()"
+				  outlined
+				  dense
+				  clearable
+				></v-text-field>
+        	</v-col>
+        	<v-col cols="2">
+				<v-btn outlined @click="search()">검색</v-btn>
+        	</v-col>
+        </v-row>
+		<v-row>
+		  	<v-col style="text-align:center; padding:120px;" v-if="loadingFlag">
+			    <v-progress-circular
+			      indeterminate
+			      color="primary"
+			    ></v-progress-circular>
+		    </v-col>
+			<v-col cols="6" v-else>
+				<ul>
+					<li v-if="newsList.length === 1">
+						<h4>{{newsList[0].title}}</h4>
+					</li>
+					<li v-else v-for="news in newsList">
+						<a :href="news.link"  target="_blank" style="padding-bottom:5px;">{{news.title}}</a>
+					</li>
+					<div v-if="newsList.length!==0 && newsList.length < 10" style="padding-bottom:230px;"></div>
+				</ul>
+			</v-col>
+		</v-row>
+		<div v-if="!loadingFlag && newsList.length === 0" style="padding-bottom:240px;"></div>
+    </div>
+</div>

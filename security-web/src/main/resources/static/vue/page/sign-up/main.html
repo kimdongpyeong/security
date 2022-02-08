@@ -1,0 +1,180 @@
+<div class="login">
+    <section>
+        <v-form ref="form" onsubmit="return false">
+            <v-row class="w-100 h-100 ma-0">
+                <v-col cols="5" class="pa-0">
+                    <div class="pa-10 text-center vertical-center">
+                        <v-row style="flex: none;">
+                            <v-col cols="12">
+                                <p class="font-size-25 font-weight-900 mb-1">데모버전 신청</p>
+                                <span class="color-gray subtitle-2">서비스 이용을 위해 이메일 정보를 입력해주세요.</span>
+                            </v-col>
+                            <v-col cols="12" class="text-left pt-0 pb-1">
+                                <div class="w-100">
+                                    <span class="color-gray subtitle-2">이메일</span>
+                                    <v-text-field
+                                      class="pt-1"
+                                      height="45"
+                                      v-model="data.email"
+                                      placeholder="이메일 주소 입력"
+                                      :rules="[rules.email]"
+                                      validate-on-blur
+                                    ></v-text-field>
+                                </div>
+                            </v-col>
+                            <v-col cols="12" v-if="data.successMessage === 'success'" class="text-left pt-0 pb-1">
+                                <div class="w-100">
+                                    <span class="color-gray subtitle-2">인증번호</span>
+                                    <v-text-field
+                                      class="pt-1"
+                                      height="45"
+                                      :class="data.auth? 'input-border-blue' : 'input-border-gray'"
+                                      v-model="data.authCode"
+                                      placeholder="인증번호 입력"
+                                      validate-on-blur
+                                    ></v-text-field>
+                                </div>
+                            </v-col>
+                            <v-col cols="12" v-if="data.successMessage === 'success'" class="mt-3">
+                                <v-btn
+                                  large
+                                  width="140"
+                                  elevation="0"
+                                  @click="authCode()"
+                                >인증하기</v-btn>
+                            </v-col>
+                            <v-col cols="12" v-else class="mt-3">
+                                <v-btn
+                                  large
+                                  width="140"
+                                  elevation="0"
+                                  @click="emailSend()"
+                                >인증번호 받기</v-btn>
+                            </v-col>
+                            <v-col cols="12" v-if="data.authPass === 'success'" class="mt-3">
+                                <btn 
+                                  type="button" 
+                                  @click="showStep01Dialog('N');" 
+                                  class="el-button headerBtn signupBtn el-button--button"
+                                >회원가입</btn>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </v-col>
+            </v-row>
+        </v-form>
+	</section>
+    <v-row>
+	    <!-- v-if="data.authPass === 'success'" -->
+	    <div class="infoFormWrap" v-if="data.user.signUpWay === 'N'">
+	        <el-dialog
+	            title=""
+	            :visible.sync="visible.step01Visible"
+	            class="signUpWrap"
+	            :close-on-click-modal="false"
+	            :close-on-press-escape="false"
+	            :before-close="modalClose"
+	            >
+	            <div class="contents">
+	                <h3>회원가입<!-- <img src="/resources/img/beta/icon_checkbox.svg" alt=""> --></h3>
+	                <h4>간단한 회원가입 절차로 Z-play서비스를 모두 이용하실 수 있습니다.</h4>
+	                <form action="">
+	                    <template>
+	                        <div class="boxGroup">
+	                            <h4>이메일</h4>
+	                            <input id="id" type="text" readonly maxlength="100" v-model="data.user.username" @blur="validateChk('email');" :class="{validationMark: !flag.emailFlag}" ref = "email" placeholder="example@naver.com" />
+	                            <p :show="!flag.emailFlag" class="validationMessage">{{ flag.emailText }}</p>
+	                        </div>
+	                        <div class="boxGroup">
+	                            <h4>비밀번호</h4>
+	                            <input type="password" id="pw" maxlength="16" v-model="data.user.password" @blur="validateChk('pwd');" :class="{validationMark: !flag.pwdFlag}" ref="pwd" placeholder="영문/숫자/특수문자 (8자 이상)"/>
+	                            <input type="password" id="pwCheck" maxlength="16" v-model="data.user.passwordCk" @blur="validateChk('pwdCk');" :class="{validationMark: !flag.pwdCkFlag}" ref="pwdCk" placeholder="비밀번호 확인"/>
+	                            <p :show="!flag.pwdCkFlag || !flag.pwdFlag" class="validationMessage">{{ flag.pwdText }}</p>
+	                        </div>
+	                    </template>
+	                    <div class="boxGroup">
+	                        <h4>이름</h4>
+	                        <input type="text"name="name" v-model="data.user.name" maxlength="10" @keyup="validateChk('name');" @blur="validateChk('name');" @keydown="validateChk('name');" :class="{validationMark: !flag.nameFlag}" placeholder="한글/영문" >
+	                        <p :show="!flag.nameFlag" class="validationMessage">{{ flag.nameText }}</p>
+	                    </div>
+	                    <div class="boxGroup">
+	                        <h4>닉네임</h4>
+	                        <input type="text"name="nickname" v-model="data.user.nickname" maxlength="10" @keyup="validateChk('nickname');" @blur="validateChk('nickname');" @keydown="validateChk('nickname');" :class="{validationMark: !flag.nicknameFlag}" placeholder="한글/영문/숫자 (3~10자)" >
+	                        <p :show="!flag.nicknameFlag" class="validationMessage">{{ flag.nicknameText }}</p>
+	                    </div>
+	                    <div class="boxGroup moreInfoGroup">
+	                        <h4>추가정보</h4>
+	                        <div class="moreBox">
+	                            <div class="genderBox">
+	                                <p>성별</p>
+	                                <el-radio v-model="data.user.gender" label="W">여자</el-radio>
+	                                <el-radio v-model="data.user.gender" label="M">남자</el-radio>
+	                            </div>
+	                            <div class="ageBox">
+	                                <p>나이</p>
+	                                <input type="text" v-model="data.user.age" maxlength="2" @blur="validateChk('age');" :class="{validationMark: !flag.ageFlag}">
+	                                세
+	                                <p :show="!flag.ageFlag" class="validationMessage">{{ flag.ageText }}</p>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <ul id="agreementLists" class="agreementLists">
+	                        <li>
+	                            <el-checkbox id="all" v-model="terms.checkAll" @change="checkedAll($event);">[전체] 약관 전체 동의하기</el-checkbox>
+	                        </li>
+	                        <li v-for="(terms, i) in terms.checkContent">
+	                            <el-checkbox
+	                                :id="terms.id"
+	                                :value="terms.id"
+	                                v-model="terms.checked"
+	                                @change="contentCheck"
+	                            >
+	                                <template v-for="terms.id">
+	                                    <span class="important" v-if="terms.requiredYn == 'Y'">[필수]</span>{{terms.title}}
+	                                    <span v-else>[선택]</span>{{terms.title}}
+	                                </template>
+	                            </el-checkbox>
+	                            <el-button class="viewMoreBtn" type="button" @click="getTermsDetail(i);">자세히 보기</button>
+	                        </li>
+	                    </ul>
+	                    <div class="btnWrap">
+	                        <button type="button" @click="visible.cancelVisible = true; ">취소</button>
+	                        <button type="button" class="enterBtn" :class="flag.saveFlag? 'active' : ''" @click="saveAccount();">확인</button>
+	                    </div>
+	                </form>
+	                <div class="circleBtnWrap"></div>
+	            </div>
+	        </el-dialog>
+	    </div>
+    </v-row>
+    <!-- 취소팝업 -->
+    <el-dialog
+        title=""
+        :visible.sync="visible.cancelVisible"
+        class="cancelPop"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+    >
+        <div class="contents">
+            <h2>잠깐!</h2>
+            <h3>지금 가입하시고</h3>
+            <p>라이브 이벤트 참여해보세요</p>
+        </div>
+        <div class="btnWrap">
+            <button type="button" @click="visible.cancelVisible = false;">되돌아가기</button>
+            <button type="button" @click="visibleClear();">취소하기</button>
+        </div>
+    </el-dialog>
+    <!-- 이용약관 -->
+    <div class="infoFormWrap termsWrap" v-if="data.user.signUpWay === 'N'">
+        <el-dialog title="" :visible.sync="visible.termsVisible" class="signUpWrap">
+            <div class="contents">
+                <h4>{{ terms.contents.title }}</h4>
+                <div class="content" v-html="terms.contents.contents"></div>
+            </div>
+            <div class="btnWrap">
+                <button class="backBtn" type="button" @click="visible.termsVisible = false">뒤로가기</button>
+            </div>
+        </el-dialog>
+    </div>
+</div>

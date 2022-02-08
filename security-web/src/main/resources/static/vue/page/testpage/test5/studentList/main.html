@@ -1,0 +1,120 @@
+<div>
+    <section>
+        <v-form ref="form" onsubmit="return false">
+            <div>
+                <button type="button" @click="visible.en = true;" style="width: 100px; height: 50px; color: white; background-color: rgb(0,128,255); border-radius: 12px;">학생 등록</button>
+		        <el-dialog
+		            :visible.sync="visible.en"
+		            title="학생 등록"
+		        >
+			        <div class="boxGroup">
+			            <span style="display: inline !important;">이름: </span>
+			            <input id="name" type="text" v-model="data.student.name" style="width: 200px; height: 40px;"/>
+			        </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">휴대폰 번호: </span>
+                        <input id="phoneNum" :rules="[rules.email]" type="text" v-model="data.student.phoneNum" style="width: 200px; height: 40px;"/>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">이메일: </span>
+                        <input id="email" type="text" v-model="data.student.email" @blur="validateChk('email');" :class="{validationMark: !flag.emailFlag}" ref = "email" placeholder="example@naver.com" />
+                        <p :show="!flag.emailFlag" class="validationMessage"></p>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">성별: </span>
+                        <el-radio v-model="data.student.gender" label="W">여자</el-radio>
+                        <el-radio v-model="data.student.gender" label="M">남자</el-radio>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">나이: </span>
+	                    <select name="educationCd" id="educationCd" v-model="data.student.educationCd">
+	                        <option value="">학년</option>
+	                        <template v-for="item in data.student.education">
+	                            <option :value="item.value">{{item.name}}</option>
+	                        </template>
+	                    </select>
+                    </div>
+                    <div class="boxGroup">
+                        <div class="genderBox">
+                            <span style="display: inline !important;">강의 유형: </span>
+                            <el-radio v-model="data.student.lectureType" label="O">온라인</el-radio>
+                            <el-radio v-model="data.student.lectureType" label="F">오프라인</el-radio>
+                        </div>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">강의 명: </span>
+                        <input id="lectureName" type="text" v-model="data.student.lectureName" @blur="validateChk('lectureName');" style="width: 200px; height: 40px;"/>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">시작일: </span>
+	                    <el-date-picker
+	                        v-model="data.student.startDate"
+	                        type="date"
+	                        placeholder="시작일"
+	                        value-format="yyyy-MM-dd"
+	                    ></el-date-picker>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">종료일: <span>
+                        <el-date-picker
+                            v-model="data.student.endDate"
+                            type="date"
+                            placeholder="종료일"
+                            value-format="yyyy-MM-dd"
+                        ></el-date-picker>
+                    </div>
+                    <div class="boxGroup">
+                        <span style="display: inline !important;">요일 지정: </span>
+                        <el-checkbox-group v-model="data.student.week">
+			                <el-checkbox label="2" key="2">월</el-checkbox>
+			                <el-checkbox label="3" key="3">화</el-checkbox>
+			                <el-checkbox label="4" key="4">수</el-checkbox>
+			                <el-checkbox label="5" key="5">목</el-checkbox>
+			                <el-checkbox label="6" key="6">금</el-checkbox>
+			                <el-checkbox label="7" key="7">토</el-checkbox>
+			                <el-checkbox label="1" key="1">일</el-checkbox>
+			            </el-checkbox-group>
+                    </div>
+                    <div class="boxGroup">
+                        <span>총 회차 수: </span>
+                        <input id="lectureNum" pattern="^[0-9]+$" type="text" v-model="data.student.lectureNum" style="width: 200px; height: 40px; "/>
+                    </div>
+			        <div class="btnWrap">
+			            <button type="button" @click="visible.en = false;">취소하기</button>
+			            <button type="button" @click="save();">등록하기</button>
+			        </div>
+		        </el-dialog>
+            </div>
+        </v-form>
+	</section>
+	
+        <template>
+            <input @keyup="LoadList()" id="studentSearch" type="text" v-model="data.student.studentSearch" style="width: 600px; height: 40px;" placeholder="학생 검색"/>
+            <button type="button" @click="LoadStudent()" style="width: 100px; height: 50px; color: white; background-color: rgb(0,128,255); border-radius: 12px;">불러오기</button>
+            <v-simple-table dense fixed-header height="300px">
+                <template v-slot:default >
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;" scope="row">이름</th>
+                            <th style="text-align: center;" scope="row">유형</th>
+                            <th style="text-align: center;" scope="row">이메일</th>
+                            <th style="text-align: center;" scope="row">번호</th>
+                            <th style="text-align: center;" scope="row">수강 회차</th>
+                            <th style="text-align: center;" scope="row">강의명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+	                    <tr v-for="studentList in data.student.studentList" :key="studentList.id" @click="detail(studentList.id)">
+	                        <td>{{ studentList.name }}</td>
+	                        <td>{{ studentList.lectureType }}</td>
+	                        <td>{{ studentList.email }}</td>
+	                        <td>{{ studentList.phoneNum }}</td>
+	                        <td>{{ studentList.lectureNum }}</td>
+	                        <td>{{ studentList.lectureName }}</td>
+	                    </tr>
+                    </tbody>
+                </template>
+            </v-simple-table>
+        </template>
+	
+</div>

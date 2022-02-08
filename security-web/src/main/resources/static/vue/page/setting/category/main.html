@@ -1,0 +1,146 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>카테고리 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row dense>
+        <v-col cols="12" sm="6">
+            <v-card>
+                <v-card-title>카테고리 목록</v-card-title>
+                <v-card-text>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <v-treeview
+                            dense
+                            activatable
+                            return-object
+                            :items="treeview.categoryList.items"
+                            :active.sync="treeview.categoryList.active"
+                        >
+                            <template v-slot:prepend="{ item, open }">
+                                <template v-if="item.childrenCount > 0">
+                                    <template v-if="open">
+                                        <v-icon>mdi-folder-open</v-icon>
+                                    </template>
+                                    <template v-else>
+                                        <v-icon>mdi-folder</v-icon>
+                                    </template>
+                                </template>
+                                <template v-else>
+                                    <v-icon>mdi-file</v-icon>
+                                </template>
+                            </template>
+                            <template v-slot:label="{ item }">
+                                <div style="cursor: pointer;">{{ item.tempTitle }}</div>
+                            </template>
+                        </v-treeview>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col cols="12" sm="6">
+            <v-card>
+                <v-card-title>카테고리 상세</v-card-title>
+                <v-card-text>
+                    <v-form ref="form">
+                        <v-row dense>
+                            <v-col cols="12">
+                                <v-text-field
+                                    dense
+                                    outlined
+                                    label="카테고리명"
+                                    validate-on-blur
+                                    maxlength="50"
+                                    counter
+                                    hide-details="auto"
+                                    v-model="data.category.title"
+                                    :rules="[rules.required]"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-autocomplete
+                                    dense
+                                    outlined
+                                    clearable
+                                    hide-no-data
+                                    label="부모 이름"
+                                    hide-details="auto"
+                                    item-text="titlePath"
+                                    item-value="id"
+                                    :items="autocomplete.parentId.items"
+                                    v-model="data.category.parentId"
+                                ></v-autocomplete>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-textarea
+                                  outlined
+                                  label="카테고리 설명"
+                                  maxlength="50"
+                                  counter
+                                  hide-details="auto"
+                                  validate-on-blur
+                                  v-model="data.category.desc"
+                                  :rules="[rules.required]"
+                                ></v-textarea>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" sm="4">
+                                <v-card flat>
+                                    <v-card-title>게시여부</v-card-title>
+                                    <v-radio-group
+                                        v-model="data.category.publishYn"
+                                        row
+                                        mandatory
+                                        class="pl-3 mt-1"
+                                    >
+                                        <v-radio
+                                            label="게시"
+                                            value="Y"
+                                        ></v-radio>
+                                        <v-radio
+                                            label="미게시"
+                                            value="N"
+                                        ></v-radio>
+                                    </v-radio-group>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="2">
+                                <v-card flat>
+                                    <v-card-title>순위</v-card-title>
+                                    <v-text-field
+                                        outlined
+                                        validate-on-blur
+                                        dense
+                                        type="number"
+                                        hide-details="auto"
+                                        v-model="data.category.orderNo"
+                                        :rules="[rules.required]"
+                                        class="wd-150 pl-3"
+                                    ></v-text-field>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" class="text-right">
+                                <v-btn
+                                    color="secondary"
+                                    @click="data.category = {};"
+                                >생성</v-btn>
+                                <v-btn
+                                    color="primary"
+                                    @click="saveCategory();"
+                                >저장</v-btn>
+                                <v-btn
+                                    v-if="!!data.category.id"
+                                    color="error"
+                                    @click="removeCategory();"
+                                >삭제</v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </v-col>
+    </v-row>
+</div>

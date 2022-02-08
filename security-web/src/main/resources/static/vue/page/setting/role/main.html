@@ -1,0 +1,48 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>역할 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col cols="12">
+            <v-expansion-panels
+                multiple
+                v-model="role.panels.list"
+            >
+                <v-expansion-panel>
+                    <v-expansion-panel-header>권한 리스트</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <v-data-table
+                            fixed-header
+                            hide-default-footer
+                            height="auto"
+                            show-select
+                            v-model="role.selected"
+                            :headers="role.dataTable.headers"
+                            :items="role.dataTable.items"
+                            :loading="role.dataTable.loading"
+                            :server-items-length="role.dataTable.serverItemsLength"
+                            :page.sync="role.dataTable.page"
+                            :items-per-page.sync="role.dataTable.itemsPerPage"
+                            @page-count="role.pagination.length = $event;"
+                            @click:row="handleClick"
+                        >
+                        </v-data-table>
+                        <div>
+                            <v-pagination
+                                :length="role.pagination.length"
+                                :total-visible="role.pagination.totalVisible"
+                                v-model="role.dataTable.page"
+                            ></v-pagination>
+                        </div>
+                        <div class="float-right">
+                            <v-btn depressed color="primary" @click="$router.push('/settings/roles/detail')">등록</v-btn>
+                            <v-btn depressed color="error" @click="deleteRoleList()">삭제</v-btn>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-expansion-panels>
+        </v-col>
+    </v-row>
+</div>

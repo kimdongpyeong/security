@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.common.util.category.mapper.ApiUtilCategoryMapper">
+
+    <sql id="treeCategorySelectFromWhere">
+        WITH RECURSIVE `tree_category` AS (
+            SELECT
+                `root_category`.`id`,
+                `root_category`.`parent_id`,
+                `root_category`.`title`,
+                `root_category`.`desc`,
+                `root_category`.`publish_yn`,
+                `root_category`.`order_no`,
+                `root_category`.`created_date`,
+                `root_category`.`last_modified_date`,
+                1 AS `depth`,
+                `root_category`.`title` AS `title_path`,
+                CAST(LPAD(`root_category`.`order_no`, 3, '0') AS VARCHAR(100)) AS `order_no_path`,
+                IFNULL((
+                    SELECT
+                        COUNT(`lower_category`.`id`)
+                    FROM
+                        `tb_category` `lower_category`
+                    WHERE
+                        `lower_category`.`parent_id` = `root_category`.`id`
+                    GROUP BY
+                        `root_category`.`id`
+                ), 0) AS `children_count`
+            FROM
+                `tb_category` `root_category`
+            WHERE
+                `root_category`.`parent_id` IS NULL
+            UNION ALL
+            SELECT
+                `children_category`.`id`,
+                `children_category`.`parent_id`,
+                `children_category`.`title`,
+                `children_category`.`desc`,
+                `children_category`.`publish_yn`,
+                `children_category`.`order_no`,
+                `children_category`.`created_date`,
+                `children_category`.`last_modified_date`,
+                (`tree_category`.`depth` + 1) AS `depth`,
+                CONCAT(`tree_category`.`title_path`, '/', `children_category`.`title`) AS `title_path`,
+                CONCAT(`tree_category`.`order_no_path`, '/', LPAD(`children_category`.`order_no`, 3, '0')) AS `order_no_path`,
+                IFNULL((
+                    SELECT
+                        COUNT(`lower_category`.`id`)
+                    FROM
+                        `tb_category` `lower_category`
+                    WHERE
+                        `lower_category`.`parent_id` = `children_category`.`id`
+                    GROUP BY
+                        `children_category`.`id`
+                ), 0) AS `children_count`
+            FROM
+                `tb_category` `children_category`
+            INNER JOIN
+                `tree_category`
+            ON
+                `children_category`.`parent_id` = `tree_category`.`id`
+        )
+        SELECT
+            `tree_category`.`id`,
+            `tree_category`.`parent_id`,
+            `tree_category`.`title`,
+            `tree_category`.`desc`,
+            `tree_category`.`publish_yn`,
+            `tree_category`.`order_no`,
+            `tree_category`.`created_date`,
+            `tree_category`.`last_modified_date`,
+            `tree_category`.`depth`,
+            `tree_category`.`title_path`,
+            `tree_category`.`order_no_path`,
+            `tree_category`.`children_count`
+        FROM
+            `tree_category`
+        <where>
+            <if test="treeCategoryParamDto.publishYn != null and treeCategoryParamDto.publishYn != ''">
+                AND `tree_category`.`publish_yn` = #{treeCategoryParamDto.publishYn}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="treeCategoryResultMap" type="kr.supporti.common.util.category.dto.TreeCategoryDto">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="title" column="title"/>
+        <result property="desc" column="desc"/>
+        <result property="publishYn" column="publish_yn"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="lastModifiedDate" column="last_modified_date"/>
+        <result property="depth" column="depth"/>
+        <result property="titlePath" column="title_path"/>
+        <result property="orderNoPath" column="order_no_path"/>
+        <result property="childrenCount" column="children_count"/>
+    </resultMap>
+
+    <select
+        id="selectTreeCategoryList"
+        parameterType="java.util.Map"
+        resultMap="treeCategoryResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="treeCategorySelectFromWhere"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectTreeCategoryListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="treeCategorySelectFromWhere"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+</mapper>

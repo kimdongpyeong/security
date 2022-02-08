@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.LecturerBoardMapper">
+
+    <sql id="selectFrom">
+    SELECT
+        `lecturerBoard`.`id`,
+        `lecturerBoard`.`lecturer_id`,
+        `lecturerBoard`.`title`,
+        `lecturerBoard`.`desc`,
+        `lecturerBoard`.`delete_yn`,
+        `lecturerBoard`.`created_date`,
+        `lecturerBoard`.`last_modified_date`
+    FROM
+        `tb_lecturer_board` `lecturerBoard`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="lecturerBoardDto.lecturerId != null">
+                AND `lecturerBoard`.`lecturer_id` = #{lecturerBoardDto.lecturerId}
+            </if>
+            <if test="lecturerBoardDto.title != null">
+                AND `lecturerBoard`.`title` LIKE CONCAT('%', #{lecturerBoardDto.title}, '%')
+            </if>
+            <if test="lecturerBoardDto.deleteYn != null">
+                AND `lecturerBoard`.`delete_yn` = 'N'
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="boardResultMap" type="kr.supporti.api.common.entity.LecturerBoardEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerId" column="lecturer_id"/>
+        <result property="title" column="title"/>
+        <result property="desc" column="desc"/>
+        <result property="deleteYn" column="delete_yn"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="lastModifiedDate" column="last_modified_date"/>
+    </resultMap>
+
+    <select
+        id="selectLecturerBoardList"
+        parameterType="java.util.Map"
+        resultMap="boardResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectLecturerBoardListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+    
+    <select
+        id="selectLecturerBoard"
+        parameterType="java.util.Map"
+        resultMap="boardResultMap"
+    >
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        WHERE
+            `lecturerBoard`.`id` = #{lecturerBoardDto.id}
+    </select>
+
+</mapper>

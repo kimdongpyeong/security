@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.LecturerDataFileMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `lecturer_data_file`.`id`,
+            `lecturer_data_file`.`lecturer_data_id`,
+            `lecturer_data_file`.`origin_file_nm`,
+            `lecturer_data_file`.`save_file_nm`,
+            `lecturer_data_file`.`file_extension`,
+            `lecturer_data_file`.`file_size`,
+            `lecturer_data_file`.`created_date`
+        FROM
+            `tb_lecturer_data_file` `lecturer_data_file`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="lecturerDataFileDto.lecturerDataId != null and lecturerDataFileDto.lecturerDataId != ''">
+                AND `lecturer_data_file`.`lecturer_data_id` = #{lecturerDataFileDto.lecturerDataId}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="lecturerDataFileResultMap" type="kr.supporti.api.common.entity.LecturerDataFileEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerDataId" column="lecturer_data_id"/>
+        <result property="originFileNm" column="origin_file_nm"/>
+        <result property="saveFileNm" column="save_file_nm"/>
+        <result property="fileExtension" column="file_extension"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="createdDate" column="created_date"/>
+    </resultMap>
+
+    <select
+        id="selectLecturerDataFileList"
+        parameterType="java.util.Map"
+        resultMap="lecturerDataFileResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectLecturerDataFileListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectLecturerDataFile"
+        parameterType="java.util.Map"
+        resultMap="lecturerDataFileResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `lecturer_data_file`.`id` = #{id}
+    </select>
+
+    <!-- <update
+        id="modifyLecturerDataFile"
+        parameterType ="java.util.Map"
+    >
+        UPDATE 
+            `tb_lecturer_data_file` `lecturer_data_file`
+        SET
+	            `lecturer_data_file`.`lecturer_data_id` = #{lecturerDataFileDto.lecturer_data_id}
+            <if test="lecturerDataFileDto.originFileNm != null and lecturerDataFileDto.originFileNm != ''">
+                , `lecturer_data_file`.`origin_file_nm` = #{lecturerDataFileDto.originFileNm}
+            </if>
+            <if test="lecturerDataFileDto.saveFileNm != null and lecturerDataFileDto.saveFileNm != ''">
+                , `lecturer_data_file`.`save_file_nm` = #{lecturerDataFileDto.saveFileNm}
+            </if>
+            <if test="lecturerDataFileDto.fileExtension != null and lecturerDataFileDto.fileExtension != ''">
+                , `lecturer_data_file`.`file_extension` = #{lecturerDataFileDto.fileExtension}
+            </if>
+            <if test="lecturerDataFileDto.fileSize != null and lecturerDataFileDto.fileSize != ''">
+                , `lecturer_data_file`.`file_size` = #{lecturerDataFileDto.fileSize}
+            </if>
+        WHERE
+            `lecturer_data_file`.`id` = #{lecturerDataFileDto.id}
+    </update> -->
+    <!-- <if> 사용할 때 콤마 사용에 에러가 나면 <set>사용하기 (자동적으로 처리해준다) -->
+
+</mapper>

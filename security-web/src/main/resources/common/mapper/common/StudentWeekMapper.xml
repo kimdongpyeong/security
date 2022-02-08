@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.StudentWeekMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `lecturer_student_day`.`id`,
+            `lecturer_student_day`.`lecturer_student_id`,
+            `lecturer_student_day`.`day`
+        FROM
+            `tb_lecturer_student_day` `lecturer_student_day`
+            
+    </sql>
+
+    <sql id="where">
+    </sql>
+    
+    <resultMap id="studentWeekResultMap" type="kr.supporti.api.common.entity.StudentDayEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerStudentId" column="lecturer_student_id"/>
+        <result property="day" column="day"/>
+    </resultMap>
+
+    <select
+        id="selectStudentWeek"
+        parameterType="java.util.Map"
+        resultMap="studentWeekResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `lecturer_student_day`.`lecturer_student_id` = #{id}
+    </select>
+    
+    <update
+        id="updateStudentWeekInfo"
+        parameterType="java.util.Map">
+        UPDATE `tb_lecturer_student_day` `lecturer_student_day`
+        <set>
+            <if test="studentDayDto.dayNum != null and studentDayDto.dayNum != ''">
+                `lecturer_student_day`.`day` = #{studentDayDto.dayNum},
+            </if>
+        </set>
+        WHERE
+            `lecturer_student_day`.`id` = #{studentDayDto.id}
+    </update>
+</mapper>

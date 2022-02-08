@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.StudentGradeMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `lecturer_student_grade`.`id`,
+            `lecturer_student_grade`.`lecturer_student_id`,
+            `lecturer_student_grade`.`classification_cd`,
+            `lecturer_student_grade`.`subject_cd`,
+            `lecturer_student_grade`.`grade_input_date`,
+            `lecturer_student_grade`.`score`,
+            `lecturer_student_grade`.`specificity`,
+            `lecturer_student_grade`.`created_date`,
+            `lecturer_student_grade`.`last_modified_date`
+        FROM
+            `tb_lecturer_student_grade` `lecturer_student_grade`
+            
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="studentGradeDto.lecturerStudentId != null and studentGradeDto.lecturerStudentId != ''">
+                AND `lecturer_student_grade`.`lecturer_student_id` = #{studentGradeDto.lecturerStudentId}
+            </if>
+            <if test="studentGradeDto.classificationCd != null and studentGradeDto.classificationCd != ''">
+                AND `lecturer_student_grade`.`classification_cd` = #{studentGradeDto.classificationCd}
+            </if>
+            <if test="studentGradeDto.subjectCd != null and studentGradeDto.subjectCd != ''">
+                AND `lecturer_student_grade`.`subject_cd` = #{studentGradeDto.subjectCd}
+            </if>
+        </where>
+    </sql>
+    
+    <resultMap id="studentGradeResultMap" type="kr.supporti.api.common.entity.StudentGradeEntity">
+        <result property="id" column="id"/>
+        <result property="lecturerStudentId" column="lecturer_student_id"/>
+        <result property="classificationCd" column="classification_cd"/>
+        <result property="subjectCd" column="subject_cd"/>
+        <result property="gradeInputDate" column="grade_input_date"/>
+        <result property="score" column="score"/>
+        <result property="specificity" column="specificity"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="lastModifiedDate" column="last_modified_date"/>
+    </resultMap>
+
+    <select
+        id="selectStudentGradeList"
+        parameterType="java.util.Map"
+        resultMap="studentGradeResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectStudentGradeListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+</mapper>

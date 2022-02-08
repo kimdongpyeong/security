@@ -1,0 +1,44 @@
+<div class="ma-3">
+    <v-row dense>
+        <v-col>
+            <h1>공지사항 관리</h1>
+        </v-col>
+    </v-row>
+    <v-row dense class="pb-3 text-end">
+        <v-col cols="12">
+            <v-btn depressed color="black" @click="$router.push('/mypage/lecturer/board/list')">등록</v-btn>
+        </v-col>
+    </v-row>
+    <v-card class="pa-5">
+        <v-card-title>
+            <v-btn 
+                class="mr-2"
+                v-for="code in codeBtnList"
+            </v-btn>
+        </v-card-title>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-card-title>
+        <v-data-table
+          :headers="headers"
+          :items="board"
+          :search="search"
+          class="elevation-1"
+          @click:row="noticeDetail($event)"
+        >
+          <template v-slot:item.kindsNm ="{ item }">
+            <v-chip
+              outlined
+            >
+              {{ item.kindsNm }}
+            </v-chip>
+          </template>
+        </v-data-table>
+    </v-card>
+</div>

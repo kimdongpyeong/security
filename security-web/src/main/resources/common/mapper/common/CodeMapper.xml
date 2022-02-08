@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.CodeMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `code`.`id`,
+            `code`.`parent_id`,
+            `code`.`name`,
+            `code`.`description`,
+            `code`.`value`,
+            `code`.`order_no`,
+            `code`.`status`,
+            `code`.`created_date`,
+            `code`.`last_modified_date`
+        FROM
+            `tb_code` `code`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="codeParamDto.parentId != null">
+                AND `code`.`parent_id` = #{codeParamDto.parentId}
+            </if>
+            <if test="codeParamDto.parentIdInParentId != null">
+                AND `code`.`parent_id` IN (SELECT id FROM tb_code WHERE parent_id = #{codeParamDto.parentIdInParentId})
+            </if>
+            <if test="codeParamDto.status != null and codeParamDto.status != ''">
+                AND `code`.`status` = #{codeParamDto.status}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="codeResultMap" type="kr.supporti.api.common.entity.CodeEntity">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="value" column="value"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="status" column="status"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="lastModifiedDate" column="last_modified_date"/>
+    </resultMap>
+
+    <select
+        id="selectCodeList"
+        parameterType="java.util.Map"
+        resultMap="codeResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectCodeListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectCode"
+        parameterType="java.util.Map"
+        resultMap="codeResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `code`.`id` = #{id}
+    </select>
+
+    <select
+        id="selectCodeByParentName"
+        parameterType="java.util.Map"
+        resultMap="codeResultMap"
+    >
+          <include refid="selectFrom"/>
+        WHERE
+                `code`.`name` = #{parentName}
+            AND
+                `code`.`parent_id` IS NULL
+        limit 1
+    </select>
+
+    <select
+        id="selectCodeByParentNameAndChildNameForIfExists"
+        parameterType="java.util.Map"
+        resultMap="codeResultMap"
+    >
+        SELECT
+            `A`.`id`,
+            `A`.`parent_id`,
+            `A`.`name`,
+            `A`.`description`,
+            `A`.`value`,
+            `A`.`order_no`,
+            `A`.`created_date`,
+            `A`.`last_modified_date`
+        FROM
+            (
+                <include refid="selectFrom"/>
+                WHERE
+                    `code`.`name` = #{childName}
+            ) AS A
+        INNER JOIN
+            (
+                <include refid="selectFrom"/>
+                WHERE
+                        `code`.`name` = #{parentName}
+                    AND
+                        `code`.`parent_id` IS NULL
+                limit 1
+            ) AS B
+        ON
+            A.PARENT_ID = B.ID
+        limit 1
+    </select>
+
+
+</mapper>

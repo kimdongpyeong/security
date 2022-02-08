@@ -1,0 +1,46 @@
+<div class="mypage-wrap">
+    <div class="container">
+        <h2 class="tit">
+            <div class="profile-img"><img :src="data.user.profileSrc" alt=""></div>
+            <strong>{{ data.user.name }}님</strong> 환영합니다.
+        </h2>
+        <div class="mypage-group">
+            <h3>지난 강의
+                <!-- 버튼 클릭시 input box와 버튼 활성화 -->
+                <!-- <button class="delete-btn"><img src="/resources/img/icon/icon-delete.png" alt=""></button> -->
+                <!-- 활성화 버튼을 다시 클릭시 팝업 생성 -->
+                <button class="delete-btn" @click="deleteClassPop"><img src="/resources/img/icon/icon-delete-active.png" alt=""></button>
+            </h3>
+            <ul class="leacture-list">
+                <li v-for="(item, idx) in data.classRoomList.list" @click="detailClass(item.id)" v-if="idx < data.classRoomList.rowSize">
+                    <el-checkbox @change="classCheck(item.id)"></el-checkbox>
+                    <a href="javascript:void(0);">
+                        <div class="img-box">
+                            <img :src="'/api/app/images?subpath=classRoomProfile&filename=' + item.saveFileNm" alt="">
+                            <div class="hover-box">
+                                <el-progress type="circle" :percentage="75"></el-progress>
+                            </div>
+                        </div>
+                        <p class="tit">{{item.title}}</p>
+                    </a>
+                </li>
+            </ul>
+            <div class="btn-group" v-if="data.classRoomList.rowSize < data.classRoomList.list.length" @click="moreClassRoomList();">
+                <!-- 더보기버튼 클릭시 한줄씩 생성 -->
+                <button class="more-btn">더보기</button>
+            </div>
+        </div>
+    </div>
+
+    <el-dialog
+        title="삭제하시겠습니까?"
+        :visible.sync="visible.deleteDialog"
+        class="pop-wrap delete-pop-wrap"
+        center>
+        <div class="col-group btn-group">
+            <button  @click="visible.deleteDialog = false">아니오</button>
+            <button class="main-btn" @click="deleteClass">네</button>
+        </div>
+    </el-dialog>
+    <!-- //삭제 팝업 -->
+</div>

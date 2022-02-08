@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.supporti.api.common.mapper.RoleMenuMapper">
+
+    <sql id="selectFrom">
+        SELECT
+            `role_menu`.`role_id`,
+            `role_menu`.`menu_id`,
+            `role_menu_role`.`id` AS `role_menu_role_id`,
+            `role_menu_role`.`name` AS `role_menu_role_name`,
+            `role_menu_role`.`description` AS `role_menu_role_description`,
+            `role_menu_role`.`value` AS `role_menu_role_value`,
+            `role_menu_role`.`created_date` AS `role_menu_role_created_date`,
+            `role_menu_role`.`last_modified_date` AS `role_menu_role_last_modified_date`,
+            `role_menu_menu`.`id` AS `role_menu_menu_id`,
+            `role_menu_menu`.`parent_id` AS `role_menu_menu_parent_id`,
+            `role_menu_menu`.`name` AS `role_menu_menu_name`,
+            `role_menu_menu`.`description` AS `role_menu_menu_description`,
+            `role_menu_menu`.`path` AS `role_menu_menu_path`,
+            `role_menu_menu`.`ranking` AS `role_menu_menu_ranking`,
+            `role_menu_menu`.`show` AS `role_menu_menu_show`,
+            `role_menu_menu`.`publicy_status` AS `role_menu_menu_show_publicy_status`,
+            `role_menu_menu`.`icon` AS `role_menu_menu_icon`,
+            `role_menu_menu`.`created_date` AS `role_menu_menu_created_date`,
+            `role_menu_menu`.`last_modified_date` AS `role_menu_menu_last_modified_date`
+        FROM
+            `tb_role_menu` `role_menu`
+        LEFT OUTER JOIN
+            `tb_role` `role_menu_role`
+        ON
+            `role_menu`.`role_id` = `role_menu_role`.`id`
+        LEFT OUTER JOIN
+            `tb_menu` `role_menu_menu`
+        ON
+            `role_menu`.`menu_id` = `role_menu_menu`.`id`
+    </sql>
+
+    <sql id="where">
+        <where>
+            <if test="roleMenuParamDto.roleId != null">
+                AND `role_menu`.`role_id` = #{roleMenuParamDto.roleId}
+            </if>
+            <if test="roleMenuParamDto.menuId != null">
+                AND `role_menu`.`menu_id` = #{roleMenuParamDto.menuId}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="roleMenuResultMap" type="kr.supporti.api.common.entity.RoleMenuEntity">
+        <result property="roleId" column="role_id"/>
+        <result property="menuId" column="menu_id"/>
+        <association property="role" columnPrefix="role_menu_role_">
+            <result property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="description" column="description"/>
+            <result property="value" column="value"/>
+            <result property="createdDate" column="created_date"/>
+            <result property="lastModifiedDate" column="last_modified_date"/>
+        </association>
+        <association property="menu" columnPrefix="role_menu_menu_">
+            <result property="id" column="id"/>
+            <result property="parentId" column="parent_id"/>
+            <result property="name" column="name"/>
+            <result property="description" column="description"/>
+            <result property="path" column="path"/>
+            <result property="ranking" column="ranking"/>
+            <result property="show" column="show"/>
+            <result property="publicyStatus" column="publicy_status"/>
+            <result property="icon" column="icon"/>
+            <result property="createdDate" column="created_date"/>
+            <result property="lastModifiedDate" column="last_modified_date"/>
+        </association>
+    </resultMap>
+
+    <select
+        id="selectRoleMenuList"
+        parameterType="java.util.Map"
+        resultMap="roleMenuResultMap"
+    >
+        <include refid="PageFragment.sortStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.sortEnd"/>
+        <include refid="PageFragment.limitOffset"/>
+    </select>
+
+    <select
+        id="selectRoleMenuListCount"
+        parameterType="java.util.Map"
+        resultType="java.lang.Integer"
+    >
+        <include refid="PageFragment.countStart"/>
+        <include refid="selectFrom"/>
+        <include refid="where"/>
+        <include refid="PageFragment.countEnd"/>
+    </select>
+
+    <select
+        id="selectRoleMenu"
+        parameterType="java.util.Map"
+        resultMap="roleMenuResultMap"
+    >
+        <include refid="selectFrom"/>
+        WHERE
+            `role_menu`.`role_id` = #{roleId}
+            AND `role_menu`.`menu_id` = #{menuId}
+    </select>
+
+</mapper>
