@@ -1,40 +1,22 @@
-<div class="banner">
+<div class="banner" style="background: black;">
     <div class="container_z">
-        <template v-if="!name">
+        <template>
             <div class="txt-box">
-                <h2>
-                    프리랜서 강사와 크리에이터를 위한 <br class="pc">
-                    <strong>원스탑 서비스</strong>
+                <h2 style="color:white;">
+                    보안 진단과 정보 공유, 공부를 위한 사이트<br class="pc">
+                    <strong style="color:white;">정보 보안 및 해킹 기법</strong>
                 </h2>
-                <div class="btn-group">
-                    <button @click="$store.state.app.loginPopFlag = true">무료로 시작하기</button>
-                    <a class="main-btn" href="javascript:void(0);" @click="demoVideo">데모 영상 보기</a>
-                </div>
             </div>
-            <div class="img-box"><img src="/resources/img/main-before.png" alt=""></div>
-        </template>
-        <template v-else>
-            <div class="txt-box">
-                <h2>
-                    안녕하세요 <br>
-                    <strong>Support - T 입니다</strong>
-                </h2>
-                <div class="btn-group">
-                    <button @click="openLectureDialog">강의실 생성하기</button>
-                    <a class="main-btn" href="javascript:void(0);" @click="demoVideo">데모 영상 보기</a>
-                </div>
-            </div>
-            <div class="img-box"><img src="/resources/img/main-after.png" alt=""></div>
+<!--             <div class="img-box"><img src="/resources/img/main-before.png" alt=""></div> -->
         </template>
     </div>
-
     <el-dialog
         title="강의실 생성"
         :visible.sync="visible.lectureDialog"
         class="pop-wrap leacture-pop-wrap"
         width="40%"
         center>
-        <h4>줌을 연동하여 오프라인 강의를 진행해 보세요.</h4>
+        <h4>줌을 연동하여 오프라인 강의를 진행해 보세요.</h4>	
         <form action="" method="GET">
             <div class="content file-cont">
                 <input type="file" ref="thumbnail" accept="image/*" style="display:none;" @change="thumbFile($event);" />
