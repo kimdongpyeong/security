@@ -250,6 +250,82 @@ public class MypageService {
         pageResponse.setItems(lecturerDataFileList);
         return pageResponse;
     }
+    
+    @Validated(value = { CreateValidationGroup.class, ModifyValidationGroup.class })
+    @Transactional
+    public void sortLecturerData(LecturerDataParamDto lecturerDataParamDto) {
+        
+        List<LecturerDataParamDto> params = lecturerDataParamDto.getParams();
+        
+        // 전체 삭제
+        if(lecturerDataParamDto.getDelDataList() != null && lecturerDataParamDto.getDelDataList().size() > 0) {
+            for(int i = 0; i < lecturerDataParamDto.getDelDataList().size(); i++) {
+                PageRequest pageRequest = new PageRequest();
+                Long dataId = lecturerDataParamDto.getDelDataList().get(i);
+                
+                pageRequest.setPage(1);
+                pageRequest.setRowSize(100000);
+                        
+                List<LecturerDataFileEntity> dataFile = lecturerDataFileMapper.selectLecturerDataFileList(
+                        LecturerDataFileDto.builder().lecturerDataId(dataId).build(), pageRequest);
+                
+                for(LecturerDataFileEntity fileEntity : dataFile) {
+                    Long fileId = fileEntity.getId();
+                    String fileNm = fileEntity.getSaveFileNm();
+
+                    String thumbFileFullPath = filePath + File.separator + lecturerDataPath + File.separator + fileNm;
+
+                    File file = new File(thumbFileFullPath);
+
+                    if (file.exists()) {
+                        file.delete();
+                    } else {
+                    }
+                }
+                lecturerDatafileRepository.deleteAll(dataFile);
+                lecturerDataRepository.deleteById(dataId);
+            }
+        }
+        // 파일 삭제
+        if(lecturerDataParamDto.getDelFileList() != null && lecturerDataParamDto.getDelFileList().size() > 0) {
+            for(int i = 0; i < lecturerDataParamDto.getDelFileList().size(); i++) {
+                Long fileId = lecturerDataParamDto.getDelFileList().get(i);
+                
+                LecturerDataFileEntity fileEntity = lecturerDataFileMapper.selectDataFile(fileId);
+                
+                String fileNm = fileEntity.getSaveFileNm();
+
+                String thumbFileFullPath = filePath + File.separator + lecturerDataPath + File.separator + fileNm;
+
+                File file = new File(thumbFileFullPath);
+
+                if (file.exists()) {
+                    file.delete();
+                } else {
+                }
+                
+                lecturerDatafileRepository.deleteById(fileId);
+            }
+        }
+        
+        for(int i = 0; i < params.size(); i++) {
+            Long dataId = params.get(i).getId();
+            
+            if(dataId == null) {
+                lecturerDataParamDto.setLecturerId(lecturerDataParamDto.getLecturerId());
+                lecturerDataParamDto.setTitle(params.get(i).getTitle());
+                lecturerDataParamDto.setSubtitle(params.get(i).getSubtitle());
+                lecturerDataParamDto.setFiles(params.get(i).getFiles());
+                createLecturerData(lecturerDataParamDto);
+            } else {
+                lecturerDataParamDto.setId(params.get(i).getId());;
+                lecturerDataParamDto.setTitle(params.get(i).getTitle());
+                lecturerDataParamDto.setSubtitle(params.get(i).getSubtitle());
+                lecturerDataParamDto.setFiles(params.get(i).getFiles());
+                modifyLecturerData(lecturerDataParamDto);
+            }
+        }
+    }
 
     @Validated(value = { CreateValidationGroup.class })
     @Transactional
@@ -262,7 +338,7 @@ public class MypageService {
                 .subtitle(lecturerDataParamDto.getSubtitle())
                 .build();
         lecturerDataEntity = lecturerDataRepository.save(lecturerDataEntity);
-
+        
         for (int i = 0; i < files.size(); i++) {
             MultipartFile file = files.get(i);
 
@@ -301,7 +377,7 @@ public class MypageService {
                     .build();
             fileEntity = lecturerDatafileRepository.save(fileEntity);
         }
-
+        
         return new LecturerDataEntity();
     }
 
@@ -310,8 +386,9 @@ public class MypageService {
     public void modifyLecturerData(@Valid @NotNull(groups = { ModifyValidationGroup.class }) LecturerDataParamDto lecturerDataParamDto) {
 
         lecturerDataMapper.modifyLecturerData(lecturerDataParamDto);
-
+        
         List<MultipartFile> files = lecturerDataParamDto.getFiles();
+        
         if(files != null) {
             for(int i = 0; i < files.size(); i++) {
                 MultipartFile file = files.get(i);

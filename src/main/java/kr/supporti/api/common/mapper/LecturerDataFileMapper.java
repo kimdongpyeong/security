@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import kr.supporti.api.common.dto.LecturerDataDto;
 import kr.supporti.api.common.dto.LecturerDataFileDto;
+import kr.supporti.api.common.dto.NoticeDto;
+import kr.supporti.api.common.entity.ClassRoomEntity;
 import kr.supporti.api.common.entity.LecturerDataEntity;
 import kr.supporti.api.common.entity.LecturerDataFileEntity;
 import kr.supporti.common.util.PageRequest;
@@ -21,4 +23,9 @@ public interface LecturerDataFileMapper {
 
     public Integer selectLecturerDataFileListCount(@Param(value = "lecturerDataFileDto") LecturerDataFileDto lecturerDataFileDto);
 
+    public LecturerDataFileEntity selectDataFile(@Param(value = "id") Long id);
+    
+    public LecturerDataFileEntity selectData(@Param(value = "id") Long id);
+    
+    void deleteLecturerDataFileById(@Param(value = "id") Long id);
 }

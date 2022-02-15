@@ -3,14 +3,16 @@ package kr.supporti.common;
 public class Constants {
 
     /*
-     * 결제상태 (진행중, 결제완료, 취소요청, 환불완료)
+     * 결제상태 (진행중, 결제완료, 취소요청, 취소승인, 취소거절, 환불완료, 환불거절, 정기결제취소)
      */
     public static final String PAYMENT_STATE_ING = "I";
     public static final String PAYMENT_STATE_SUCCESS = "S";
+    public static final String PAYMENT_STATE_CANCEL_REQUEST = "C";
+    public static final String PAYMENT_STATE_CANCEL_APPROVAL = "CA";
+    public static final String PAYMENT_STATE_CANCEL_REJECT = "CR";
     public static final String PAYMENT_STATE_REFUND = "R";
     public static final String PAYMENT_STATE_REFUND_REJECT = "RR";
-    public static final String PAYMENT_STATE_CANCEL_REQUEST = "C";
-    public static final String PAYMENT_STATE_CANCEL_YES = "CY";
+    public static final String PAYMENT_STATE_REGULAR_PAYMENT_CANCEL = "RPC";
 
     /*
      * 결제유형 (정기, 단건)

@@ -57,7 +57,7 @@ public class ApiCommonStudentController {
                 .lectureName(studentDto.getLectureName())
                 .startDate(studentDto.getStartDate())
                 .endDate(studentDto.getEndDate())
-                .lectureNum(studentDto.getLectureNum())
+                .totalLectureNum(studentDto.getTotalLectureNum())
                 .createdBy(studentDto.getCreatedBy())
                 .build();
         return studentService.createStudent(studentEntity);
@@ -133,6 +133,11 @@ public class ApiCommonStudentController {
     @PutMapping(path = "/detail/modify/{id}")
     public Integer modifyStudent(@PathVariable(name = "id") Long id, @RequestBody StudentDto studentDto) {
         return studentService.modifyStudent(id, studentDto);
+    }
+    
+    @PutMapping(path = "/detail/modify-schedule")
+    public void modifyStudentSchedule(@RequestBody StudentDto studentDto) {
+        studentService.modifyStudentSchedule(studentDto);
     }
     
     @PutMapping(path = "/detail/modify-week")

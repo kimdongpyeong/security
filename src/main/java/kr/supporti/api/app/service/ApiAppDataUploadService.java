@@ -112,9 +112,7 @@ public class ApiAppDataUploadService {
     }
 
     public byte[] getFile(String subPath, String filename) throws IOException {
-        System.out.println("Test" + subPath);
-        System.out.println("Test" + filename);
-        System.out.println(path + File.separator + subPath + File.separator + filename);
+
         return Files.readAllBytes(Paths.get(path + File.separator + subPath + File.separator + filename));
     }
 

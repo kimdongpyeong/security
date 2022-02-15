@@ -55,7 +55,13 @@ public class StudentDto {
     
     private Integer lectureNum;
     
+    private Integer totalLectureNum;
+    
     private Long createdBy;
+    
+    private String createdByNm;
+    
+    private String createdByEmail;
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -1,5 +1,7 @@
 package kr.supporti.api.common.controller;
 
+import java.net.InetAddress;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.supporti.api.common.dto.UserDto;
+import kr.supporti.api.common.dto.UserLoginHistoryDto;
 import kr.supporti.api.common.dto.UserParamDto;
 import kr.supporti.api.common.entity.UserEntity;
+import kr.supporti.api.common.entity.UserLoginHistoryEntity;
 import kr.supporti.api.common.service.UserService;
 import kr.supporti.common.util.PageRequest;
 import kr.supporti.common.util.PageResponse;
@@ -113,6 +117,17 @@ public class ApiCommonUserController {
     @PostMapping(path = "/sms-id-exists")
     public Integer userSmsIDExsts(@RequestBody UserParamDto userParamDto) {
         return userService.getSmsUserExists(userParamDto);
+    }
+    
+    @GetMapping(path = "/ipList")
+    public PageResponse<UserLoginHistoryEntity> getUserIpList(@ModelAttribute UserLoginHistoryDto userLoginHistoryDto,
+            @ModelAttribute PageRequest pageRequest) {
+        return userService.getUserIpList(userLoginHistoryDto, pageRequest);
+    }
+
+    @GetMapping(path = "/ip/{id}")
+    public UserEntity getUserIp(@PathVariable(name = "id") Long id) {
+        return userService.getUserIp(id);
     }
 
 }

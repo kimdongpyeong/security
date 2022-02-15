@@ -26,5 +26,5 @@ import kr.supporti.common.validation.group.ReadValidationGroup;
 public interface StudentWeekMapper {
     public List<StudentDayEntity> selectStudentWeek(@Param(value = "id") Long id);
     
-    public void updateStudentWeekInfo(@Param(value = "studentDayDto") StudentDayDto studentDayDto);
+    public void updateStudentWeekInfo(@Param(value = "studentDayEntity") StudentDayEntity studentDayEntity);
 }

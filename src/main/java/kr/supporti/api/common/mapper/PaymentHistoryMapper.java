@@ -25,6 +25,8 @@ public interface PaymentHistoryMapper {
 
     public PaymentHistoryEntity selectPaymentHistoryByOrderId(@Param(value = "orderId") String orderId);
 
+    public List<PaymentHistoryEntity> selectNoRegularPaymentHistory(@Param(value = "paymentHistoryParamDto") PaymentHistoryParamDto paymentHistoryParamDto);
+
     public Integer updatePaymentHistory(@Param(value = "id") Long id, @Param(value = "paymentHistoryDto") PaymentHistoryDto paymentHistoryDto);
 
 }

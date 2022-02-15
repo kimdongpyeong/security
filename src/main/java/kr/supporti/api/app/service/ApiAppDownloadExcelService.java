@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -28,10 +28,15 @@ import kr.supporti.api.common.dto.CalculateDto;
 import kr.supporti.api.common.dto.CalculateParamDto;
 import kr.supporti.api.common.dto.SalesHistoryParamDto;
 import kr.supporti.api.common.dto.SalesTotalDto;
+import kr.supporti.api.common.dto.StudentConsultingParamDto;
 import kr.supporti.api.common.dto.UserParamDto;
+import kr.supporti.api.common.entity.EnvironmentVariableEntity;
+import kr.supporti.api.common.entity.StudentConsultingEntity;
 import kr.supporti.api.common.entity.UserEntity;
 import kr.supporti.api.common.mapper.CalculateMapper;
+import kr.supporti.api.common.mapper.EnvironmentVariableMapper;
 import kr.supporti.api.common.mapper.SalesHistoryMapper;
+import kr.supporti.api.common.mapper.StudentConsultingMapper;
 import kr.supporti.api.common.mapper.UserMapper;
 import kr.supporti.common.util.PageRequest;
 import kr.supporti.common.validation.group.ReadValidationGroup;
@@ -48,6 +53,12 @@ public class ApiAppDownloadExcelService {
     
     @Autowired
     private CalculateMapper calculateMapper;
+
+    @Autowired
+    private StudentConsultingMapper studentConsultingMapper;
+    
+    @Autowired
+    private EnvironmentVariableMapper environmentVariableMapper;
 
     @Validated(value = { ReadValidationGroup.class })
     @Transactional(readOnly = true)
@@ -377,6 +388,7 @@ public class ApiAppDownloadExcelService {
             pageRequest.setRowSize(500000);
             List<CalculateDto> calculateList = calculateMapper.selectCalculateList(calculateParamDto, pageRequest);
             UserEntity user = userMapper.selectUser(calculateParamDto.getCreatedBy());
+            EnvironmentVariableEntity payDay = environmentVariableMapper.selectEnvironmentVariableKey("PAYMENT_DUE_DATE");
             
             Integer rowNum = 3;
             DecimalFormat formatter = new DecimalFormat("###,###");
@@ -395,7 +407,7 @@ public class ApiAppDownloadExcelService {
                 Calendar cal1 = Calendar.getInstance();
                 cal1.setTime(date);
                 cal1.set(Calendar.MONTH, cal1.get(Calendar.MONTH) + 1);
-                cal1.set(Calendar.DATE, 15);
+                cal1.set(Calendar.DATE, Integer.parseInt(payDay.getValue()));
                 String payDate = transFormat.format(cal1.getTime());
                 
                 double payMoney = 0;
@@ -439,6 +451,106 @@ public class ApiAppDownloadExcelService {
             sheet.setColumnWidth(4, 5000);
             sheet.setColumnWidth(5, 5000);
             sheet.setColumnWidth(6, 4000);
+
+            workbook.write(baos);
+        } catch (IOException e) {
+        }
+        return baos.toByteArray();
+    }
+
+    @Validated(value = { ReadValidationGroup.class })
+    @Transactional(readOnly = true)
+    public byte[] downloadConsultingList(StudentConsultingParamDto studentConsultingParamDto) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = null;
+            XSSFRow row = null;
+            XSSFCell cell = null;
+            XSSFCellStyle headerCellStyle = null;
+            XSSFCellStyle bodyCellStyle = null;
+            XSSFCellStyle consultingCellStyle = null;
+            XSSFFont headerFont = null;
+            XSSFFont bodyFont = null;
+            headerFont = workbook.createFont();
+            headerFont.setFontHeightInPoints((short) 12);
+            headerFont.setBold(true);
+            bodyFont = workbook.createFont();
+            bodyFont.setFontHeightInPoints((short) 12);
+            headerCellStyle = workbook.createCellStyle();
+            headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            headerCellStyle.setBorderTop(BorderStyle.THIN);
+            headerCellStyle.setBorderRight(BorderStyle.THIN);
+            headerCellStyle.setBorderBottom(BorderStyle.THIN);
+            headerCellStyle.setBorderLeft(BorderStyle.THIN);
+            headerCellStyle.setFont(headerFont);
+            bodyCellStyle = workbook.createCellStyle();
+            bodyCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            bodyCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            bodyCellStyle.setWrapText(true);
+            bodyCellStyle.setBorderTop(BorderStyle.THIN);
+            bodyCellStyle.setBorderRight(BorderStyle.THIN);
+            bodyCellStyle.setBorderBottom(BorderStyle.THIN);
+            bodyCellStyle.setBorderLeft(BorderStyle.THIN);
+            bodyCellStyle.setFont(bodyFont);
+            consultingCellStyle = workbook.createCellStyle();
+            consultingCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            consultingCellStyle.setWrapText(true);
+            consultingCellStyle.setBorderTop(BorderStyle.THIN);
+            consultingCellStyle.setBorderRight(BorderStyle.THIN);
+            consultingCellStyle.setBorderBottom(BorderStyle.THIN);
+            consultingCellStyle.setBorderLeft(BorderStyle.THIN);
+            consultingCellStyle.setFont(bodyFont);
+
+            sheet = workbook.createSheet("매출 내역");
+            //해당하는 달의 매출내역 헤더
+            row = sheet.createRow(1);
+            cell = row.createCell(1);
+            cell.setCellValue(studentConsultingParamDto.getStudentNm() + "학생의 상담내역 ( " + studentConsultingParamDto.getStartDate() + " ~ " + studentConsultingParamDto.getEndDate() + " )");
+            cell.setCellStyle(headerCellStyle);
+            cell = row.createCell(2);
+            cell.setCellStyle(headerCellStyle);
+            cell = row.createCell(3);
+            cell.setCellStyle(headerCellStyle);
+            sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
+            row = sheet.createRow(2);
+            cell = row.createCell(1);
+            cell.setCellValue("상담 날짜");
+            cell.setCellStyle(headerCellStyle);
+            cell = row.createCell(2);
+            cell.setCellValue("제목");
+            cell.setCellStyle(headerCellStyle);
+            cell = row.createCell(3);
+            cell.setCellValue("상담 내용");
+            cell.setCellStyle(headerCellStyle);
+            PageRequest pageRequest = new PageRequest();
+            pageRequest.setRowSize(500000);
+            List<StudentConsultingEntity> consultingList = studentConsultingMapper.selectConsultingList(studentConsultingParamDto, pageRequest);
+            
+            Integer rowNum = 3;
+            //해당하는 달의 상담내역
+            for (int i = 0; i < consultingList.size(); i++) {
+                StudentConsultingEntity consultingEntity = consultingList.get(i);
+                String date = consultingEntity.getConsultingDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                String title = consultingEntity.getTitle();
+                String contents = consultingEntity.getContents();
+
+                row = sheet.createRow(rowNum++);
+                cell = row.createCell(1);
+                cell.setCellValue(date != null ? date : "");
+                cell.setCellStyle(bodyCellStyle);
+                cell = row.createCell(2);
+                cell.setCellValue(title != null ? title : "");
+                cell.setCellStyle(bodyCellStyle);
+                cell = row.createCell(3);
+                cell.setCellValue(contents != null ? contents : "");
+                cell.setCellStyle(consultingCellStyle);
+                
+            }
+            sheet.setColumnWidth(0, 2000);
+            sheet.setColumnWidth(1, 4000);
+            sheet.setColumnWidth(2, 6000);
+            sheet.setColumnWidth(3, 15000);
 
             workbook.write(baos);
         } catch (IOException e) {

@@ -26,5 +26,9 @@ public interface ClassRoomMapper {
     public void modifyClassRoom(@Param(value = "classRoomDto") ClassRoomDto classRoomDto);
 
     public void removeClassRoom(@Param(value = "classRoomDto") ClassRoomDto classRoomDto);
+    
+    public List<ClassRoomEntity> selectClassRoomChartCnt(
+            @Param(value = "classRoomParamDto") ClassRoomParamDto classRoomParamDto,
+            @Param(value = "pageRequest") PageRequest pageRequest);
 
 }

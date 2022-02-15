@@ -27,6 +27,10 @@ public class StudentDayDto {
 
     private Long id;
 
+    private Long[] weekId;
+    
+    private Long[] weekStudentId;
+    
     private Long lecturerStudentId;
 
     private String[] day;
@@ -35,9 +39,23 @@ public class StudentDayDto {
     
     @JsonFormat (pattern = "yyyy-MM-dd")
     @DateTimeFormat (pattern = "yyyy-MM-dd")
+    @Column (name = "`start_date`", columnDefinition = "DATE", nullable = false)
+    private LocalDate startDate;
+    
+    @JsonFormat (pattern = "yyyy-MM-dd")
+    @DateTimeFormat (pattern = "yyyy-MM-dd")
     private LocalDate startDateSearch;
     
     @JsonFormat (pattern = "yyyy-MM-dd")
     @DateTimeFormat (pattern = "yyyy-MM-dd")
+    @Column (name = "`end_date`", columnDefinition = "DATE", nullable = false)
+    private LocalDate endDate;
+    
+    @JsonFormat (pattern = "yyyy-MM-dd")
+    @DateTimeFormat (pattern = "yyyy-MM-dd")
     private LocalDate endDateSearch;
+    
+    private Long lectureNum;
+    
+    private Long totalLectureNum;
 }

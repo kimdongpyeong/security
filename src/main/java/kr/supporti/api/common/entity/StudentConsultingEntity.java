@@ -32,7 +32,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "`tb_lecturer_student`")
+@Table(name = "`tb_student_consulting`")
 @EntityListeners(value = { AuditingEntityListener.class })
 @Getter
 @Setter
@@ -40,7 +40,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentEntity {
+public class StudentConsultingEntity {
 
     @Null(groups = { CreateValidationGroup.class })
     @NotNull(groups = { ModifyValidationGroup.class })
@@ -48,46 +48,27 @@ public class StudentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`", columnDefinition = "bigint(20)")
     private Long id;
-    
-    @Column(name = "`student_id`", columnDefinition = "bigint(20)", nullable = true)
-    private Long studentId;
 
     @NotNull(groups = { CreateValidationGroup.class, ModifyValidationGroup.class })
-    @Column(name = "`name`", columnDefinition = "varchar(50)", nullable = false)
-    private String name;
+    @Column(name = "`lecturer_id`", columnDefinition = "bigint(20)")
+    private Long lecturerId;
 
-    @Column(name = "`phone_num`", columnDefinition = "varchar(11)", nullable = true)
-    private String phoneNum;
+    @NotNull(groups = { CreateValidationGroup.class, ModifyValidationGroup.class })
+    @Column(name = "`student_id`", columnDefinition = "bigint(20)")
+    private Long studentId;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "`consulting_date`", columnDefinition = "datetime", nullable = false)
+    private LocalDate consultingDate;
     
-    @Column(name = "`email`", columnDefinition = "varchar(50)", nullable = true)
-    private String email;
-    
-    @Column(name = "`gender`", columnDefinition = "enum('M','W')", nullable = true)
-    private String gender;
+    @NotNull(groups = { CreateValidationGroup.class, ModifyValidationGroup.class })
+    @Column(name = "`title`", columnDefinition = "varchar(50)", nullable = false)
+    private String title;
 
-    @Column(name = "`education_cd`", columnDefinition = "varchar(5)", nullable = true)
-    private String educationCd;
-
-    @Column(name = "`lecture_type`", columnDefinition = "enum('O','F')", nullable = true)
-    private String lectureType;
-
-    @Column(name = "`lecture_name`", columnDefinition = "varchar(50)", nullable = true)
-    private String lectureName;
-
-    @Column(name = "`start_date`", columnDefinition = "date", nullable = true)
-    private LocalDate startDate;
-
-    @Column(name = "`end_date`", columnDefinition = "date", nullable = true)
-    private LocalDate endDate;
-    
-    @Column(name = "`lecture_num`", columnDefinition = "INT(11)", nullable = true)
-    private Integer lectureNum;
-    
-    @Column(name = "`total_lecture_num`", columnDefinition = "INT(11)", nullable = true)
-    private Integer totalLectureNum;
-    
-    @Column(name = "`created_by`", columnDefinition = "bigint(20)", nullable = true)
-    private Long createdBy;
+    @NotNull(groups = { CreateValidationGroup.class, ModifyValidationGroup.class })
+    @Column(name = "`contents`", columnDefinition = "varchar(300)", nullable = false)
+    private String contents;
     
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -101,18 +82,7 @@ public class StudentEntity {
     @Column(name = "`last_modified_date`", columnDefinition = "datetime", nullable = false)
     private LocalDateTime lastModifiedDate;
     
+
     @Transient
-    private String linkYn;
-    
-    @Transient
-    private String studentCode;
-    
-    @Transient
-    private String week;
-    
-    @Transient
-    private String createdByNm;
-    
-    @Transient
-    private String createdByEmail;
+    private String searchMonth;
 }

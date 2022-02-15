@@ -52,6 +52,14 @@ public class PaymentHistoryEntity {
     private Long requestLecturerId;
 
     @NotNull(groups = { CreateValidationGroup.class})
+    @Column(name = "`lecture_name`", columnDefinition = "varchar(50)", nullable = false)
+    private String lectureName;
+
+    @NotNull(groups = { CreateValidationGroup.class})
+    @Column(name = "`lecture_num`", columnDefinition = "int(11)", nullable = false)
+    private Integer lectureNum;
+
+    @NotNull(groups = { CreateValidationGroup.class})
     @Column(name = "`name`", columnDefinition = "varchar(50)", nullable = false)
     private String name;
 
@@ -115,11 +123,14 @@ public class PaymentHistoryEntity {
     private String tossPaymentKey;
 
     @NotNull(groups = { CreateValidationGroup.class})
-    @Column(name = "`state`", columnDefinition = "enum('I','S','R','C','CY','RR')", nullable = false)
+    @Column(name = "`state`", columnDefinition = "enum('I','S','C','CA','CR','R','RR','RPC')", nullable = false)
     private String state;
 
     @Column(name = "`regular_payment_yn`", columnDefinition = "enum('Y','N')", nullable = false)
     private String regularPaymentYn;
+
+    @Column(name = "`regular_payment_fail_desc`", columnDefinition = "varchar(100)", nullable = true)
+    private String regularPaymentFailDesc;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -136,12 +147,23 @@ public class PaymentHistoryEntity {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "`cancel_reject_date`", columnDefinition = "datetime", nullable = true)
+    private LocalDateTime cancelRejectDate;
+
+    @Column(name = "`cancel_reject_desc`", columnDefinition = "varchar(300)", nullable = true)
+    private String cancelRejectDesc;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "`refund_date`", columnDefinition = "datetime", nullable = true)
     private LocalDateTime refundDate;
 
     @Column(name = "`refund_process_id`", columnDefinition = "bigint(20)", nullable = true)
     private String refundProcessId;
 
+    @Column(name = "`refund_reject_id`", columnDefinition = "bigint(20)", nullable = true)
+    private String refundRejectId;
+    
     @Column(name = "`refund_reject_desc`", columnDefinition = "varchar(300)", nullable = true)
     private String refundRejectDesc;
 

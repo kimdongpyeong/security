@@ -44,12 +44,15 @@ public class ApiCommonEnvironmentVariableController {
         return environmentVariableService.getEnvironmentVariableKey(key);
     }
 
-//    @PutMapping(path = "{id}")
-//    public EnvironmentVariableEntity modifyEnvironmentVariable(@PathVariable(name = "id") Long id, @RequestBody EnvironmentVariableDto environmentVariableDto) {
-//        EnvironmentVariableEntity environmentVariableEntity = EnvironmentVariableEntity.builder().id(environmentVariableDto.getId()).parentId(environmentVariableDto.getParentId())
-//                .name(environmentVariableDto.getName()).description(environmentVariableDto.getDescription()).value(environmentVariableDto.getValue())
-//                .orderNo(environmentVariableDto.getOrderNo()).status(environmentVariableDto.getStatus()).build();
-//        return environmentVariableService.modifyEnvironmentVariable(environmentVariableEntity);
-//    }
+    @PutMapping(path = "")
+    public EnvironmentVariableEntity modifyEnvironment(@RequestBody EnvironmentVariableDto environmentVariableDto) {
+        EnvironmentVariableEntity environmentVariableEntity = EnvironmentVariableEntity.builder()
+                .id(environmentVariableDto.getId())
+                .key(environmentVariableDto.getKey())
+                .desc(environmentVariableDto.getDesc())
+                .value(environmentVariableDto.getValue())
+                .build();
+        return environmentVariableService.modifyEnvironment(environmentVariableEntity);
+    }
 
 }

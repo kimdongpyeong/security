@@ -22,5 +22,7 @@ public class ClassRoomParamDto {
     private Long createdBy;
     
     private String title;
+    
+    private String categoryId;
 
 }

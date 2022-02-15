@@ -125,25 +125,7 @@ public class ApiCommonMypageController {
 
     @PostMapping(path = "/lecturer-data-sort")
     public void sortLecturerData(@ModelAttribute LecturerDataParamDto lecturerDataParamDto) {
-        List<LecturerDataParamDto> params = lecturerDataParamDto.getParams();
-        
-        for(int i = 0; i < params.size(); i++) {
-            Long dataId = params.get(i).getId();
-
-            if(dataId == null) {
-                lecturerDataParamDto.setLecturerId(lecturerDataParamDto.getLecturerId());
-                lecturerDataParamDto.setTitle(params.get(i).getTitle());
-                lecturerDataParamDto.setSubtitle(params.get(i).getSubtitle());
-                lecturerDataParamDto.setFiles(params.get(i).getFiles());
-                createLecturerData(lecturerDataParamDto);
-            } else {
-                lecturerDataParamDto.setId(params.get(i).getId());;
-                lecturerDataParamDto.setTitle(params.get(i).getTitle());
-                lecturerDataParamDto.setSubtitle(params.get(i).getSubtitle());
-                lecturerDataParamDto.setFiles(params.get(i).getFiles());
-                modifyLecturerData(lecturerDataParamDto);
-            }
-        }
+        mypageService.sortLecturerData(lecturerDataParamDto);
     }
 
     @PostMapping(path = "/lecturer-data")

@@ -113,5 +113,14 @@ public class ClassRoomEntity {
     
     @Transient
     private String createdByNm;
+    
+    @Transient
+    private String lecturerCategory;
+    
+    @Transient
+    private Integer lectureDay;
+    
+    @Transient
+    private Integer lectureCnt;
 
 }

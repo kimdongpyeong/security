@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,5 +43,9 @@ public class ApiCommonPaymentHistoryController {
     @PostMapping(path = "", params = { "!bulk" })
     public PaymentHistoryEntity createPaymentHistory(@RequestBody PaymentHistoryDto paymentHistoryDto) {
         return paymentHistoryService.createPaymentHistory(paymentHistoryDto);
+    }
+    @PutMapping(path = "{id}")
+    public Integer modifyPayment(@PathVariable(name = "id") Long id, @RequestBody PaymentHistoryDto paymentHistoryDto) {
+        return paymentHistoryService.modifyPaymentHistory(id, paymentHistoryDto);
     }
 }

@@ -56,7 +56,7 @@ public class EnvironmentVariableService {
 
     @Validated(value = { ModifyValidationGroup.class })
     @Transactional
-    public EnvironmentVariableEntity modifyEnvironmentVariable(@Valid @NotNull(groups = { ModifyValidationGroup.class }) EnvironmentVariableEntity environmentVariableEntity) {
+    public EnvironmentVariableEntity modifyEnvironment(@Valid @NotNull(groups = { ModifyValidationGroup.class }) EnvironmentVariableEntity environmentVariableEntity) {
         return environmentVariableRepository.save(environmentVariableEntity);
     }
 

@@ -1,8 +1,7 @@
 package kr.supporti.api.common.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,41 +20,26 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class StudentConsultingDto {
 
     private Long id;
 
-    private String name;
+    private Long lecturerId;
 
-    private String username;
-
-    private String password;
-
-    private String phoneNum;
-
-    private String bankCd;
+    private Long studentId;
     
-    private String bankName;
-
-    private String accountNum;
+    private String seachMonth;
     
-    private String paymentGeneral;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate consultingDate;
 
-    private String status;
-
-    private Long profileId;
-
-    private String signUpWay;
-
-    private String lecturerApprovalYn;
+    private String title;
+    
+    private String contents;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdDate;
 
-    @Transient
-    private String oldPassword;
-
-    @Transient
-    private String newPassword;
 }

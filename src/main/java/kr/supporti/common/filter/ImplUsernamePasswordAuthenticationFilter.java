@@ -2,6 +2,9 @@ package kr.supporti.common.filter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.InetAddress;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.LockedException;
@@ -41,9 +45,15 @@ import com.nimbusds.jwt.SignedJWT;
 
 import kr.supporti.api.common.dto.MenuParamDto;
 import kr.supporti.api.common.dto.RoleParamDto;
+import kr.supporti.api.common.dto.UserLoginHistoryDto;
+import kr.supporti.api.common.entity.ApiEntity;
+import kr.supporti.api.common.entity.InviteStudentEntity;
 import kr.supporti.api.common.entity.MenuEntity;
 import kr.supporti.api.common.entity.RoleEntity;
 import kr.supporti.api.common.entity.UserEntity;
+import kr.supporti.api.common.entity.UserLoginHistoryEntity;
+import kr.supporti.api.common.mapper.UserMapper;
+import kr.supporti.api.common.repository.UserRepository;
 import kr.supporti.api.common.service.MenuService;
 import kr.supporti.api.common.service.RoleService;
 import kr.supporti.api.common.service.UserService;
@@ -58,6 +68,12 @@ import kr.supporti.common.util.menu.service.ApiUtilMenuService;
 
 public class ImplUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private UserMapper userMapper;
+    
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         AuthenticationManager authenticationManager = this.getAuthenticationManager();
@@ -95,6 +111,7 @@ public class ImplUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             } else {
                 authentication = new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.NO_AUTHORITIES);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                
             }
         } catch (IOException e) {
 
@@ -262,6 +279,26 @@ public class ImplUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
                 jwtKeyValueService.createJwtKeyValue(jwtKeyValueEntity);
             } catch (JOSEException e) {
             }
+            
+            UserLoginHistoryDto userLoginHistoryDto = new UserLoginHistoryDto();
+            UserEntity user = userService.getUserByUsername(username);
+            
+              try {
+                  InetAddress ip = InetAddress.getLocalHost(); 
+                  System.out.println("Host Name = [" + ip.getHostName() + "]"); 
+                  System.out.println("Host Address = [" + ip.getHostAddress() + "]"); 
+                  userLoginHistoryDto.setLoginIp(ip.getHostAddress());
+              } catch (Exception e) { 
+                  System.out.println(e); 
+              }
+    
+            UserLoginHistoryEntity userLoginHistoryEntity = UserLoginHistoryEntity.builder() 
+                .userId(user.getId())
+                .loginIp(userLoginHistoryDto.getLoginIp())
+                .loginDate(LocalDateTime.now())
+                .build(); 
+            userService.createUserIp(userLoginHistoryEntity);
+            
             response.setHeader("Authorization", "Bearer " + token);
 
             HttpSession session = request.getSession();

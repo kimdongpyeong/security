@@ -1,5 +1,7 @@
 package kr.supporti.api.common.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,5 +51,11 @@ public class ApiCommonClassRoomController {
     @DeleteMapping(path = "")
     public void removeClassRoom(@RequestBody ClassRoomDto classRoomDto) {
         classRoomService.removeClassRoom(classRoomDto);
+    }
+    
+    @GetMapping(path = "/chart-cnt")
+    public PageResponse<ClassRoomEntity> getClassRoomChartCnt(@ModelAttribute ClassRoomParamDto classRoomParamDto,
+            @ModelAttribute PageRequest pageRequest) {
+        return classRoomService.getClassRoomChartCnt(classRoomParamDto, pageRequest);
     }
 }

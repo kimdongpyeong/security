@@ -36,12 +36,14 @@ public class PaymentHistoryParamDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime requestDate;
 
+    private Long paymentUserId;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;
 
     private String state;
-    
+
     private String[] multiState;
 
     private String paymentGeneral;
@@ -59,5 +61,11 @@ public class PaymentHistoryParamDto {
     private Integer searchDay;
 
     private String paymentDiv;
+
+    private String regularPaymentYn;
+    
+    private String refundRejectId;
+    
+    private String refundRejectDesc;
 
 }

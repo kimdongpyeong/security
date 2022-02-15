@@ -178,10 +178,25 @@ public class StudentService {
     
     @Validated(value = { ModifyValidationGroup.class })
     @Transactional
-    public void modifyStudentWeek(@Valid @NotNull(groups = { ModifyValidationGroup.class }) StudentDayDto studentDayDto) {
-        
-        studentMapper.updateStudentWeekInfo(studentDayDto);
-        studentWeekMapper.updateStudentWeekInfo(studentDayDto);
+    public void modifyStudentWeek(@Valid @NotNull(groups = { CreateValidationGroup.class }) StudentDayDto studentDayDto) {
+        System.out.println("qqwweerr" + studentDayDto.getDay().length);
+        System.out.println("qqwweerr" + studentDayDto.getDay());
+
+        for(int i = 0; i <= studentDayDto.getDay().length; i++) {
+            StudentDayEntity studentDayEntity = StudentDayEntity.builder()
+                .day(studentDayDto.getDay()[i])
+                .id(studentDayDto.getWeekId()[i])
+                .lecturerStudentId(studentDayDto.getWeekStudentId()[0])
+                .build();
+            System.out.println("zzzzz" + studentDayEntity);
+            studentWeekMapper.updateStudentWeekInfo(studentDayEntity);
+        }
+    }
+    
+    @Validated(value = { ModifyValidationGroup.class })
+    @Transactional
+    public void modifyStudentSchedule(@Valid @NotNull(groups = { ModifyValidationGroup.class }) StudentDto studentDto) {
+        studentMapper.updateStudentWeekInfo(studentDto);
     }
     
     @Validated(value = { CreateValidationGroup.class })
@@ -190,28 +205,27 @@ public class StudentService {
             @Valid @NotNull(groups = { CreateValidationGroup.class }) StudentDto studentDto ,PageRequest pageRequest) {
 
         List<InviteStudentEntity> inviteStudentList = inviteStudentMapper.selectInviteStudentList(inviteStudentParamDto, pageRequest);
+        String LinkYn = new String("N");
         
         int returnVal = 0;
         for(int i = 0; i < inviteStudentList.size(); i++) {
-            String link = "N";
-            System.out.println("qweqwe" + inviteStudentList.get(i).getLinkYn().getClass().getName());
-            System.out.println("zxczxc" + link.getClass().getName());
-//            if(inviteStudentList.get(i).getLinkYn() == link) {
-                studentDto.setStudentId(inviteStudentList.get(i).getStudentId());
-                studentDto.setName(inviteStudentList.get(i).getUserName());
-                studentDto.setPhoneNum(inviteStudentList.get(i).getUserPhone());
-                studentDto.setEmail(inviteStudentList.get(i).getUserEmail());
-                studentDto.setLectureName(inviteStudentList.get(i).getClassTitle());
-                studentDto.setCreatedBy(inviteStudentList.get(i).getLecturerId());
+            if(inviteStudentList.get(i).getLinkYn().contentEquals(LinkYn)) {
                 
-                Long id = inviteStudentList.get(i).getStudentId();
-                inviteStudentParamDto.setLinkYn("Y");
-                
-                inviteStudentMapper.updateStudentInfo(id, inviteStudentParamDto);
-                
-                returnVal += 1; 
-                studentMapper.insertStudent(studentDto);
-//            }
+                 if(inviteStudentList.get(i).getLinkYn() != LinkYn) {
+                 studentDto.setStudentId(inviteStudentList.get(i).getStudentId());
+                 studentDto.setName(inviteStudentList.get(i).getUserName());
+                 studentDto.setPhoneNum(inviteStudentList.get(i).getUserPhone());
+                 studentDto.setEmail(inviteStudentList.get(i).getUserEmail());
+                 studentDto.setLectureName(inviteStudentList.get(i).getClassTitle());
+                 studentDto.setCreatedBy(inviteStudentList.get(i).getLecturerId());
+                 
+                 Long id = inviteStudentList.get(i).getStudentId();
+                 inviteStudentParamDto.setLinkYn("Y");
+                 
+                 inviteStudentMapper.updateStudentInfo(id, inviteStudentParamDto);
+                 
+                 returnVal += 1; studentMapper.insertStudent(studentDto); }
+            }
         }
         return returnVal;
     }

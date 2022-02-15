@@ -83,6 +83,11 @@ public class ApiAppTossController {
         return tossService.cancelCardPayment(paymentId);
     }
 
+    @GetMapping("/money/cancel/{paymentId}")
+    public String cancelMoneyPayment(@PathVariable(name = "paymentId") Long paymentId) throws IOException {
+        return tossService.cancelMoneyPayment(paymentId);
+    }
+
     @GetMapping("/search")
     public void searchOrder(
             @RequestParam(name="orderId") String orderId) throws IOException {

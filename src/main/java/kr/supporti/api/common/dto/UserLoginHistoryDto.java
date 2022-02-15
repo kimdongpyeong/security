@@ -21,41 +21,16 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserLoginHistoryDto {
 
     private Long id;
 
-    private String name;
+    private Long userId;
 
-    private String username;
-
-    private String password;
-
-    private String phoneNum;
-
-    private String bankCd;
-    
-    private String bankName;
-
-    private String accountNum;
-    
-    private String paymentGeneral;
-
-    private String status;
-
-    private Long profileId;
-
-    private String signUpWay;
-
-    private String lecturerApprovalYn;
+    private String loginIp;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdDate;
+    private LocalDateTime loginDate;
 
-    @Transient
-    private String oldPassword;
-
-    @Transient
-    private String newPassword;
 }

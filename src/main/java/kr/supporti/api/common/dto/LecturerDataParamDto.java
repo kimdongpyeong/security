@@ -38,6 +38,10 @@ public class LecturerDataParamDto {
     private Long lecturerDataId;
  
     private MultipartFile file;
+    
+    private List<Long> delDataList;
+    
+    private List<Long> delFileList;
 
 //    private String originFileNm;
 //

@@ -53,11 +53,11 @@ public class KakaoPayService {
     // 단건결제
     public String singlePayment(Long paymentId) throws IOException {
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> token = (Map<String, Object>) usernamePasswordAuthenticationToken.getDetails();
-        UserEntity loginEntity = (UserEntity) token.get("user");
+//        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+//                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+//        @SuppressWarnings("unchecked")
+//        Map<String, Object> token = (Map<String, Object>) usernamePasswordAuthenticationToken.getDetails();
+//        UserEntity loginEntity = (UserEntity) token.get("user");
 
         URL url = new URL("https://kapi.kakao.com/v1/payment/ready");
 
@@ -80,11 +80,12 @@ public class KakaoPayService {
         WeakHashMap<String, Object> params = new WeakHashMap<>();
         params.put("cid", cid);
         params.put("partner_order_id", paymentEntity.getOrderId());
-        params.put("partner_user_id", loginEntity.getId());
+//        params.put("partner_user_id", loginEntity.getId());
+        params.put("partner_user_id", 85);
         params.put("item_name", userEntity.getName() + " 강사님이 요청한 " + type);
         params.put("quantity", "1");
         params.put("total_amount", paymentEntity.getAmount());
-        params.put("tax_free_amount", "100");
+        params.put("tax_free_amount", 0);
         params.put("approval_url", serverDomain + "/api/app/kakao/success?paymentId="+ paymentId);
         params.put("cancel_url", serverDomain + "/api/app/kakao/cancel?paymentId="+ paymentId);
         params.put("fail_url", serverDomain + "/api/app/kakao/fail?paymentId="+ paymentId);
@@ -112,7 +113,8 @@ public class KakaoPayService {
                 paymentId,
                 PaymentHistoryDto.builder()
                     .kakaoTid(jsonObj.get("tid").toString())
-                    .paymentUserId(loginEntity.getId()).build());
+//                    .paymentUserId(loginEntity.getId()).build());
+                    .paymentUserId(85L).build());
 
         return jsonObj.get("next_redirect_pc_url").toString();
     }
@@ -135,6 +137,8 @@ public class KakaoPayService {
         PaymentHistoryEntity paymentEntity = paymentHistoryService.getPaymentHistory(paymentId);
         UserEntity userEntity = userService.getUser(paymentEntity.getRequestLecturerId());
 
+        Integer number = regularPaymentHistoryMapper.selectMaxNumberByPaymentHistoryId(paymentEntity.getId());
+
         WeakHashMap<String, Object> params = new WeakHashMap<>();
         params.put("cid", Constants.REGULAR_CID);
         params.put("sid", paymentEntity.getKakaoSid());
@@ -143,7 +147,7 @@ public class KakaoPayService {
         params.put("item_name", userEntity.getName() + " 강사님이 요청한 정기결제");
         params.put("quantity", "1");
         params.put("total_amount", paymentEntity.getAmount());
-        params.put("tax_free_amount", "100");
+        params.put("tax_free_amount", 0);
         params.put("approval_url", serverDomain + "/api/app/kakao/success?paymentId="+ paymentId);
         params.put("cancel_url", serverDomain + "/api/app/kakao/cancel?paymentId="+ paymentId);
         params.put("fail_url", serverDomain + "/api/app/kakao/fail?paymentId="+ paymentId);
@@ -170,11 +174,11 @@ public class KakaoPayService {
         PaymentHistoryDto dto = new PaymentHistoryDto();
 
         if(jsonObj.get("approved_at").toString() != null) {
-            // 결제방법 (카드, 현금)
             dto.setRegularPaymentYn("Y");
             dto.setRegularPaymentFailDesc("결제성공");
-            dto.setState(Constants.PAYMENT_STATE_SUCCESS);
-
+            if(number == 0) {
+                dto.setState(Constants.PAYMENT_STATE_SUCCESS);
+            }
             regularPaymentHistoryMapper.insertRegularPaymentByKakao(paymentId, jsonObj.get("tid").toString(), jsonObj.get("sid").toString());
         } else {
             dto.setRegularPaymentYn("N");
@@ -252,12 +256,12 @@ public class KakaoPayService {
                                         .regularPaymentYn((paymentEntity.getPaymentType().equals("R"))? "Y" : null)
                                         .build();
             paymentHistoryService.modifyPaymentHistory(paymentId, dto);
-            response.sendRedirect(serverDomain + "/mypage/users/payment/kakao-success");
+            response.sendRedirect(serverDomain + "/dashboard/users/payment/payment/detail/kakao-success");
         } else {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(jsonObj.get("extras").toString());
             jsonObj = (JSONObject) obj;
-            response.sendRedirect(serverDomain + "/mypage/users/payment/kakao-fail?result=" + jsonObj.get("method_result_message").toString());
+            response.sendRedirect(serverDomain + "/dashboard/users/payment/payment/detail/kakao-fail?result=" + jsonObj.get("method_result_message").toString());
         }
     }
 

@@ -17,9 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import kr.supporti.api.common.dto.UserDto;
+import kr.supporti.api.common.dto.UserLoginHistoryDto;
 import kr.supporti.api.common.dto.UserParamDto;
 import kr.supporti.api.common.entity.UserEntity;
+import kr.supporti.api.common.entity.UserLoginHistoryEntity;
+import kr.supporti.api.common.mapper.UserLoginHistoryMapper;
 import kr.supporti.api.common.mapper.UserMapper;
+import kr.supporti.api.common.repository.UserLoginHistoryRepository;
 import kr.supporti.api.common.repository.UserRepository;
 import kr.supporti.common.util.PageRequest;
 import kr.supporti.common.util.PageResponse;
@@ -34,12 +38,18 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private UserLoginHistoryRepository userLoginHistoryRepository;
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    UserLoginHistoryMapper userLoginHistoryMapper;
 
     @Validated(value = { ReadValidationGroup.class })
     @Transactional(readOnly = true)
@@ -163,5 +173,27 @@ public class UserService {
     @Transactional(readOnly = true)
     public Integer getSmsUserExists(@Valid UserParamDto userParamDto) {
         return userMapper.selectSmsUserListCount(userParamDto);
+    }
+    
+    @Validated(value = { CreateValidationGroup.class })
+    @Transactional
+    public void createUserIp(@Valid @NotNull(groups = { CreateValidationGroup.class }) UserLoginHistoryEntity userLoginHistoryEntity) {
+        userLoginHistoryMapper.createUserIp(userLoginHistoryEntity);
+    }
+    
+    @Validated(value = { ReadValidationGroup.class })
+    @Transactional(readOnly = true)
+    public PageResponse<UserLoginHistoryEntity> getUserIpList(@Valid UserLoginHistoryDto userLoginHistoryDto, PageRequest pageRequest) {
+        Integer userIpListCount = userLoginHistoryMapper.selectUserIpListCount(userLoginHistoryDto);
+        List<UserLoginHistoryEntity> userIpList = userLoginHistoryMapper.selectUserIpList(userLoginHistoryDto, pageRequest);
+        PageResponse<UserLoginHistoryEntity> pageResponse = new PageResponse<>(pageRequest, userIpListCount);
+        pageResponse.setItems(userIpList);
+        return pageResponse;
+    }
+
+    @Validated(value = { ReadValidationGroup.class })
+    @Transactional(readOnly = true)
+    public UserEntity getUserIp(@Valid @NotNull(groups = { ReadValidationGroup.class }) Long id) {
+        return userMapper.selectUser(id);
     }
 }

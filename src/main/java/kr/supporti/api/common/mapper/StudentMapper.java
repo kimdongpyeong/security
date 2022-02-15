@@ -34,5 +34,5 @@ public interface StudentMapper {
 
     public Integer updateStudentInfo(@Param(value = "id") Long id, @Param(value = "studentDto") StudentDto studentDto);
     
-    public void updateStudentWeekInfo(@Param(value = "studentDayDto") StudentDayDto studentDayDto);
+    public void updateStudentWeekInfo(@Param(value = "studentDto") StudentDto studentDto);
 }

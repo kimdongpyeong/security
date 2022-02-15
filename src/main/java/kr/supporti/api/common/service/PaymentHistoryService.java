@@ -81,6 +81,8 @@ public class PaymentHistoryService {
 
         PaymentHistoryEntity paymentHistoryEntity = PaymentHistoryEntity.builder()
                 .name(paymentHistoryDto.getName())
+                .lectureName(paymentHistoryDto.getLectureName())
+                .lectureNum(paymentHistoryDto.getLectureNum())
                 .paymentTargetCd(paymentHistoryDto.getPaymentTargetCd())
                 .amount(paymentHistoryDto.getAmount())
                 .paymentType(paymentHistoryDto.getPaymentType())

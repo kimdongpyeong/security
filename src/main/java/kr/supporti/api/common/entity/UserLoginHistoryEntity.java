@@ -2,7 +2,6 @@ package kr.supporti.api.common.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +32,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "`tb_lecturer_student_day`")
+@Table(name = "`tb_user_login_history`")
 @EntityListeners(value = { AuditingEntityListener.class })
 @Getter
 @Setter
@@ -41,7 +40,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentDayEntity {
+public class UserLoginHistoryEntity {
 
     @Null(groups = { CreateValidationGroup.class })
     @NotNull(groups = { ModifyValidationGroup.class })
@@ -50,25 +49,21 @@ public class StudentDayEntity {
     @Column(name = "`id`", columnDefinition = "bigint(20)")
     private Long id;
 
-    @NotNull(groups = { CreateValidationGroup.class, ModifyValidationGroup.class })
-    @Column(name = "`lecturer_student_id`", columnDefinition = "bigint(20)", nullable = false)
-    private Long lecturerStudentId;
+    @Column(name = "`user_id`", columnDefinition = "bigint(20)", nullable = false)
+    private Long userId;
 
-    @Column(name = "`day`", columnDefinition = "varchar(1)", nullable = false)
-    private String day;
-    
-    @Transient
-    private String dayNum;
-    
-    @Transient
-    private LocalDate startDate;
+    @Column(name = "`login_ip`", columnDefinition = "varchar(50)", nullable = false)
+    private String loginIp;
+
+    @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "`login_date`", columnDefinition = "datetime", nullable = false, updatable = false)
+    private LocalDateTime loginDate;
 
     @Transient
-    private LocalDate endDate;
+    private String userNm;
     
     @Transient
-    private Long lectureNum;
-    
-    @Transient
-    private Long totalLectureNum;
+    private String userEmail;
 }

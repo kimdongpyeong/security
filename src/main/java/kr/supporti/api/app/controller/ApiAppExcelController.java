@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.supporti.api.app.service.ApiAppDownloadExcelService;
 import kr.supporti.api.common.dto.CalculateParamDto;
 import kr.supporti.api.common.dto.SalesHistoryParamDto;
+import kr.supporti.api.common.dto.StudentConsultingParamDto;
 
 @RestController
 @RequestMapping(path = "api/app/excels")
@@ -37,5 +38,12 @@ public class ApiAppExcelController {
     public byte[] downloadCalculateList(
             @ModelAttribute CalculateParamDto calculateParamDto) throws IOException {
         return downloadExcelService.downloadCalculateList(calculateParamDto);
+    }
+
+    @GetMapping(path = "consultingList-download.xlsx", produces = {
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+    public byte[] downloadConsultingList(
+            @ModelAttribute StudentConsultingParamDto studentConsultingParamDto) throws IOException {
+        return downloadExcelService.downloadConsultingList(studentConsultingParamDto);
     }
 }

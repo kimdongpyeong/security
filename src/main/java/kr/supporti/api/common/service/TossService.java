@@ -341,11 +341,13 @@ public class TossService {
             String paymentMethodCd = Constants.PAYMENT_METHOD_MONEY;
             String general = Constants.PAYMENT_GENERAL_PERSON; // 결제자구분(개인)
             String paymentDiv = Constants.PAYMENT_DIV_TOSS; // 결제수단 (토스)
+            String state = Constants.PAYMENT_STATE_SUCCESS;
 
             PaymentHistoryDto dto = PaymentHistoryDto.builder()
                                         .paymentMethodCd(paymentMethodCd)
                                         .paymentUserId(loginEntity.getId())
                                         .paymentGeneral(general)
+                                        .state(state)
                                         .paymentDiv(paymentDiv)
                                         .regularPaymentYn((paymentEntity.getPaymentType().equals("R"))? "Y" : null)
                                         .tossPaymentKey(paymentKey)
@@ -438,6 +440,76 @@ public class TossService {
         return result;
     }
 
+    // 가상계좌 환불 API
+    public String cancelMoneyPayment(Long paymentId) throws IOException {
+
+        PaymentHistoryEntity paymentEntity = paymentHistoryService.getPaymentHistory(paymentId);
+
+        URL url = new URL("https://api.tosspayments.com/v1/payments/" + paymentEntity.getTossPaymentKey() + "/cancel");
+
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Authorization", "Basic " + tossPaymentKey);
+        con.setRequestMethod("POST");
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);
+        con.setDoInput(true);
+        con.setDoOutput(true);
+
+        JSONObject params = new JSONObject();
+
+        params.put("cancelReason", paymentEntity.getCancelReason());
+        params.put("cancelAmount", paymentEntity.getAmount());
+
+        JSONObject tempMap = new JSONObject();
+        tempMap.put("bank", paymentEntity.getRefundBankCd());
+        tempMap.put("accountNumber", paymentEntity.getRefundAccountNum());
+        tempMap.put("holderName", paymentEntity.getRefundUserNm());
+
+        params.put("refundReceiveAccount", tempMap);
+
+        OutputStreamWriter os = new OutputStreamWriter(con.getOutputStream());
+        os.write(params.toString());
+        os.flush();
+
+        // 응답
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+        JSONObject jsonObj = (JSONObject) JSONValue.parse(in.readLine());
+
+        String status = jsonObj.get("status").toString();
+        String orderId = jsonObj.get("orderId").toString();
+
+        String result = "success";
+
+        if(status != null && status.equals("CANCELED")) {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> token = (Map<String, Object>) usernamePasswordAuthenticationToken.getDetails();
+            UserEntity loginEntity = (UserEntity) token.get("user");
+
+            PaymentHistoryEntity historyEntity = paymentHistoryService.getPaymentHistoryByOrderId(orderId);
+
+            PaymentHistoryDto historyDto = PaymentHistoryDto.builder()
+                    .state(Constants.PAYMENT_STATE_REFUND)
+                    .refundProcessId(loginEntity.getId())
+                    .build();
+
+            con.disconnect();
+            in.close();
+            os.close();
+
+            paymentHistoryService.modifyPaymentHistory(historyEntity.getId(), historyDto);
+        } else {
+            result = jsonObj.get("message").toString();
+        }
+
+        return result;
+    }
+
+    // 가상계좌 입금 완료시 API
     public void modifyPaymentVirtualAccount(WeakHashMap<String, Object> param) throws Exception {
         String status = param.get("status").toString();
         String orderId = param.get("orderId").toString();

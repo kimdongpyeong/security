@@ -29,6 +29,10 @@ public class PaymentHistoryDto {
 
     private Long refundProcessId;
 
+    private String lectureName;
+
+    private Integer lectureNum;
+
     private String name;
 
     private String paymentTargetCd;
@@ -58,6 +62,22 @@ public class PaymentHistoryDto {
     private String multiState;
 
     private String cancelReason;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime cancleRejectDate;
+
+    private String cancelRejectDesc;
+
+    private String refundRejectId;
+    
+    private String refundRejectDesc;
+
+    private String refundAccountNum;
+
+    private String refundBankCd;
+
+    private String refundUserNm;
 
     private String orderId;
 

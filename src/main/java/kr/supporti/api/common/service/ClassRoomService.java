@@ -334,5 +334,16 @@ public class ClassRoomService {
     public void removeClassRoom(@Valid @NotNull(groups = { RemoveValidationGroup.class }) ClassRoomDto classRoomDto) {
         classRoomMapper.removeClassRoom(classRoomDto);
     }
+    
+    @Validated(value = { ReadValidationGroup.class })
+    @Transactional(readOnly = true)
+    public PageResponse<ClassRoomEntity> getClassRoomChartCnt(@Valid ClassRoomParamDto classRoomParamDto,
+            PageRequest pageRequest) {
+        Integer classRoomListCount = classRoomMapper.selectClassRoomListCount(classRoomParamDto);
+        List<ClassRoomEntity> classRoomList = classRoomMapper.selectClassRoomChartCnt(classRoomParamDto, pageRequest);
+        PageResponse<ClassRoomEntity> pageResponse = new PageResponse<>(pageRequest, classRoomListCount);
+        pageResponse.setItems(classRoomList);
+        return pageResponse;
+    }
 
 }

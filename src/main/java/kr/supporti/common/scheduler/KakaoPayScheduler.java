@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import kr.supporti.api.common.dto.PaymentHistoryDto;
 import kr.supporti.api.common.dto.PaymentHistoryParamDto;
 import kr.supporti.api.common.dto.RegularPaymentHistoryParamDto;
 import kr.supporti.api.common.entity.PaymentHistoryEntity;
@@ -34,7 +35,7 @@ public class KakaoPayScheduler {
     @Autowired
     private RegularPaymentHistoryMapper regularPaymentHistoryMapper;
 
-    // 정기결제
+    // 정기결제 (오전 6시)
     @Scheduled (cron = "0 0 6 * * *")
     @Async
     public void regularPaymentScheduler () {
@@ -66,14 +67,45 @@ public class KakaoPayScheduler {
                     .paymentDateMonth(LocalDate.now().format(DateTimeFormatter.ofPattern("YYYY-MM")))
                     .build();
 
-            Integer cnt = regularPaymentHistoryMapper.selectRegularPaymentHistoryListCount(paramDto);
+            if(x.getRegularPaymentYn().equals("Y")) {
+                Integer cnt = regularPaymentHistoryMapper.selectRegularPaymentHistoryListCount(paramDto);
 
-            if(cnt == 0) {
-                try {
-                    kakaoPayService.regularPayment(x.getId());
-                } catch (IOException e) {
-                } catch (ParseException e) {
+                if(cnt == 0) {
+                    try {
+                        kakaoPayService.regularPayment(x.getId());
+                    } catch (IOException e) {
+                    } catch (ParseException e) {
+                    }
                 }
+            } else {
+                paymentHistoryMapper.updatePaymentHistory(x.getId(),
+                            PaymentHistoryDto.builder().state(Constants.PAYMENT_STATE_REGULAR_PAYMENT_CANCEL).build());
+            }
+        });
+    }
+
+    // 정기결제 실패시 재결제 (오후 6시)
+    @Scheduled (cron = "0 0 18 * * *")
+    @Async
+    public void regularPaymentFailScheduler () {
+
+        PaymentHistoryParamDto paymentHistoryParamDto = new PaymentHistoryParamDto();
+
+        LocalDate nowDate = LocalDate.now();
+
+        paymentHistoryParamDto.setState(Constants.PAYMENT_STATE_SUCCESS);
+        paymentHistoryParamDto.setPaymentType(Constants.PAYMENT_TYPE_REGULAR);
+        paymentHistoryParamDto.setPaymentDiv(Constants.PAYMENT_DIV_KAKAO);
+        paymentHistoryParamDto.setRegularPaymentYn("N");
+        paymentHistoryParamDto.setSearchEndDay(nowDate.minusMonths(1).withDayOfMonth(1));
+
+        List<PaymentHistoryEntity> paymentHistoryList = paymentHistoryMapper.selectNoRegularPaymentHistory(paymentHistoryParamDto);
+
+        paymentHistoryList.forEach(x -> {
+            try {
+                kakaoPayService.regularPayment(x.getId());
+            } catch (IOException e) {
+            } catch (ParseException e) {
             }
         });
     }
