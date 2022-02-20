@@ -11,3 +11,15 @@
     color: white;
     text-decoration: none;
 }
+
+.main-back-color {
+    background-color: rgba(0, 0, 0, .85);
+}
+
+.font-color-white {
+    color: white;
+}
+
+.font-color-black {
+    color: black;
+}
