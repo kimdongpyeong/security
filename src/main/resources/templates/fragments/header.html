@@ -1,47 +1,44 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" href="/css/topMenu.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous"> 
     <meta charset="UTF-8">
     <title>Project Management System</title>
 </head>
 <body>
 <div id="main">
     <nav role="navigation" class="site-header sticky-top py-1" th:fragment="header">
-        <ul id="main-menu">
-          <li><a href="#">MENU1</a></li>
-          <li><a href="#">MENU2</a>
-            <ul id="sub-menu">
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
+        <div id="menu">
+            <ul>
+                <li><a href="/">HOME</a>
+                </li>
+                <li><a href="#">진단</a>
+                    <ul>
+                        <li><a href="/window">Window 진단</a></li>
+                        <li><a href="/linux">Linux 진단</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">자료실</a>
+                    <ul>
+                        <li><a href="/hacking-info">해킹 정보 보고서</a></li>
+                        <li><a href="/security-info">보안 진단 보고서</a></li>
+                        <li><a href="/class-material">해킹 & 보안 수업 자료</a></li>
+                        <li><a href="/certificate-tip">보안 관련 자격증 Tip</a></li>
+                        <li><a href="/utility-tip">유용한 정보</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">프로그램</a>
+                    <ul>
+                        <li><a href="/security-program">보안 프로그램</a></li>
+                        <li><a href="/hacking-program">해킹 프로그램</a></li>
+                    </ul>
+                </li>
+                <li><a href="https://github.com/kimdongpyeong/security">Git Hub</a>
+                </li>
             </ul>
-          </li>
-          <li><a href="#">MENU3</a>
-            <ul id="sub-menu">
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-            </ul>
-          </li>
-          <li><a href="#">MENU4</a>
-            <ul id="sub-menu">
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-              <li><a href="#" aria-label="subemnu">submenu</a></li>
-            </ul>
-          </li>
-          <li><a href="#">MENU5</a></li>
-          <li><a href="#">MENU6</a></li>
-        </ul>
+        </div>
       </nav>
 </div>
-
-
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

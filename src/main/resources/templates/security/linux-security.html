@@ -7,15 +7,15 @@
     <meta charset="UTF-8">
     <title>Projects</title>
 </head>
-<body class="font-color-white">
+<body class="font-color-white main-back-color">
 
 <div th:replace="fragments/header :: header"></div>
 <div th:replace="fragments/left-menu :: left-menu"></div>
-<div th:replace="fragments/page-title :: page-title ('Window Security')"></div>
+<div th:replace="fragments/page-title :: page-title ('linux Security')"></div>
 
 <br><br>
 
-<div class="container main-back-color" id="main">
+<div class="container" id="main">
 
     <form v-on:submit.prevent="postProject">
         <div class="card mb-auto font-color-black">
@@ -24,6 +24,7 @@
                 <div class="float-left">New/Edit Project</div>
                 <div class="float-right">+</div>
             </div>
+            <div><img src="src/main/resources/templates/security/Vector.png" alt=""></div>
             <div class="card card-body collapse" id="projectForm">
                 <div class="form-group row">
                     <label for="projectName" class="col-sm-4 col-form-label">Project title</label>

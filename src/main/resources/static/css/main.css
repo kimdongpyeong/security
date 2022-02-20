@@ -23,3 +23,93 @@
 .font-color-black {
     color: black;
 }
+
+#menu {
+    font:bold 16px "malgun gothic";
+    width:1000px;
+    height:50px;
+    color:white;
+    line-height: 50px; 
+    margin:0 auto;
+    text-align: center;
+}
+
+/* menu태그 자식의 ul의 자식 li를 왼쪽정렬과 넓이 140설정 */
+#menu > ul > li {
+    float:left;
+    width:140px;
+    position:relative;
+}
+
+#menu > ul > li > ul {
+    width:130px;
+    display:none;
+    position: absolute;
+    font-size:14px;
+    background: white;
+    color: black;
+}
+
+#menu > ul > li:hover > ul {
+    display:block;
+    color: white;
+    background-color: rgba(0, 0, 0, .85);
+    width: 200px;
+}
+
+#menu > ul > li > ul > li:hover {
+    transition: ease 1s;
+    }
+
+#header {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: #222222;
+}
+.header_box {
+    width: 25%;
+    height: 100%;
+    position: fixed;
+}
+.header_title_box {
+    width: 90%;
+    text-align: center;
+    margin: 40px auto 30px auto;
+}
+.header_main_title {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 28px;
+    color: #ffffff;
+    font-weight: 600;
+    padding-bottom: 5px;
+}
+.header_sub_title {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+.header_menu_box {
+    width: 90%;
+    margin: 20px auto;
+}
+li.header_menu_list {
+    font-family: 'Kanit', sans-serif;
+    color: #ffffff;
+    letter-spacing: 1px;
+    width: calc(100% - 40px);
+    font-size: 15px;
+    padding: 21px;
+    border-bottom: 0.5px solid #333333;
+}
+li.header_menu_list:first-child {
+    border-top: 0.5px solid #333333;
+}
+li.header_menu_list:hover, .router-link-exact-active {
+    padding-left: 18px;
+    color: #dd4c39;
+    border-left: 2px solid #dd4c39;
+    margin-right: 2px;
+    cursor: pointer;
+}

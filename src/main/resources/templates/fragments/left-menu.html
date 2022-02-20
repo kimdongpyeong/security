@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous"> 
+    <meta charset="UTF-8">
+    <title>Project Management System</title>
+</head>
+<body>
+<div class="container" id="main">
+    <nav role="navigation" class="py-1" th:fragment="left-menu">
+        <div id="header">
+            <div class="header_box">
+            <div class="header_title_box">
+                <p class="header_main_title">Security</p>
+                <p class="header_sub_title">드롭 메뉴</p>
+            </div>
+            <div class="header_menu_box">
+                <ul id="nav">
+                <router-link
+                    v-for="list in lists"
+                    :key="list.key"
+                    :to="list.link"
+                    tag="li"
+                    class="header_menu_list"
+                    class-active="active"
+                    exact>{{ list.title }}
+                </router-link>
+                </ul>
+            </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<script src="webjars/vue/vue.min.js"></script>
+<script src="webjars/axios/dist/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#main',
+        data() {
+            return {
+                lists: [
+                    { link: '/', title: 'about' },
+                    { link: '/develop', title: 'develop.log' },
+                    { link: '/thought', title: 'thought.log' },
+                    { link: '/review', title: 'review.log' },
+                    { link: '/uncategorized', title: 'uncategorized.log' }
+                ]
+            }
+        },
+    })
+</script>
+
+</body>
+</html>
