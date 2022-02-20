@@ -2,7 +2,7 @@
 
 A Java full stack application with all the CRUD operations on a MySQL database using VueJS as the Front end Framework and Spring Boot as the Back end REST API.
 
-> [See it live!](http://springcrudexampleprojectmanagementap-e-1.eba-ji5ptfcy.eu-central-1.elasticbeanstalk.com/)
+> [See it live!](http://localhost:8085/)
 
 ## Used technologies:
 - Spring Boot
@@ -14,6 +14,18 @@ A Java full stack application with all the CRUD operations on a MySQL database u
 - Vue.js 2.0 & Axios
 - Bootstrap
 - HTML / CSS
+
+## 1월30일 작업:
+- 프로젝트 생성 작업
+
+## 2월06일 작업:
+- 프로젝트 초기 설정 알아보기
+
+## 2월13일 작업:
+- DB연결 및 DB 테스트 작업
+
+## 2월20일 작업:
+- 화면 그리기 작업
 
 <br />
 
