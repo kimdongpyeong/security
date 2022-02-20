@@ -34,8 +34,13 @@
     text-align: center;
 }
 
+#menu > ul {
+    text-align: center;
+}
+
 /* menu태그 자식의 ul의 자식 li를 왼쪽정렬과 넓이 140설정 */
 #menu > ul > li {
+    margin-left: 50px;
     float:left;
     width:140px;
     position:relative;
