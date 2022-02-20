@@ -53,7 +53,7 @@
 #menu > ul > li:hover > ul {
     display:block;
     color: white;
-    background-color: rgba(0, 0, 0, .85);
+    background-color: rgba(0, 0, 0, 1);
     width: 200px;
 }
 
